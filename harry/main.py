@@ -15,9 +15,12 @@ for _p in (_BACKEND_ROOT, _APPS_ROOT, _CORE_ROOT):
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from database import create_all_tables, dispose_engine
 from harry_poter.adapter.inbound.api import harry_poter_router
+
+_STATIC_DIR = _CORE_ROOT / "static"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,6 +53,7 @@ app.add_middleware(
 )
 
 app.include_router(harry_poter_router)
+app.mount("/hogwarts/map/map_file", StaticFiles(directory=_STATIC_DIR / "map_file"), name="map_file")
 
 
 @app.get("/ping")
