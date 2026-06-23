@@ -1,15 +1,29 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)  # 생성 후 수정 불가하도록 설정
+@dataclass(frozen=True)
 class WizardPointQuery:
 
-    id: int  # 직관적인 타입 변경
+    id: int
     name: str
 
 
-@dataclass(frozen=True)  # 생성 후 수정 불가하도록 설정
+@dataclass(frozen=True)
 class WizardPointResponse:
 
-    id: int  # 직관적인 타입 변경
+    id: int
     name: str
+
+
+@dataclass(frozen=True)
+class UserPointQuery:
+
+    user_id: int
+    amount: int
+
+
+@dataclass(frozen=True)
+class UserPointResponse:
+
+    user_id: int
+    total_points: int
