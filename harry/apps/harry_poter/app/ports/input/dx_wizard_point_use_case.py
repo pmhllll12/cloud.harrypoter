@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from pandas import DataFrame
 
 from harry_poter.adapter.inbound.api.schemas.dx_wizard_point_schemas import WizardPointSchema
-from harry_poter.app.dtos.dx_wizard_point_dto import WizardPointResponse
+from harry_poter.app.dtos.dx_wizard_point_dto import UserPointResponse, WizardPointResponse
 
 
 class WizardPointUseCase(ABC):
@@ -23,5 +23,10 @@ class WizardPointUseCase(ABC):
 
     @abstractmethod
     def get_survived_correlation_ranking(self, dataset: DataFrame) -> list[tuple[str, float]]:
-        '''Survived와의 상관계수를 절댓값 내림차순으로 반환'''
+        '''Survived와의 상관관계를 절댓값 내림차순으로 반환'''
+        pass
+
+    @abstractmethod
+    async def point_save(self, user_id: int, amount: int) -> UserPointResponse:
+        '''퀴즈 정답 시 유저에게 포인트 부여'''
         pass
