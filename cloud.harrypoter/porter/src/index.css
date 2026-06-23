@@ -1,0 +1,10 @@
+:root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #fff8ec 0%, #fbe9d0 100%);
+  color: #3a2415;
+}
