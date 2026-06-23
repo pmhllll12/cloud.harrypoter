@@ -6,6 +6,7 @@ from harry_poter.dependencies.po_harry_user_provider import get_harry_user_use_c
 
 '''
 해리 포터 (Harry Potter)
+주인공 
 (반강제로) 트라이위저드 시합에 참가한 4번째 챔피언. 생존 예측 모델의
 핵심 학습·예측 인터페이스를 담당합니다.
 '''

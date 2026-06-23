@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import FileResponse
 
 from harry_poter.adapter.inbound.api.schemas.ax_hogwarts_hertage_schemas import HogwartsHeritageSchema
 from harry_poter.app.dtos.ax_hogwarts_hertage_dto import HogwartsHeritageResponse
@@ -24,3 +25,17 @@ async def introduce_myself(
             name="호그와트 헤리티지 기록보관소 (Hogwarts Heritage Archive)"
         )
     )
+
+
+@hogwarts_hertage_router.get("/map", response_class=FileResponse)
+def get_map_page(
+    hogwarts: HogwartsHeritageUseCase = Depends(get_hogwarts_heritage_use_case)
+) -> FileResponse:
+    return FileResponse(hogwarts.get_map_page("index"))
+
+
+@hogwarts_hertage_router.get("/map/jongmyo", response_class=FileResponse)
+def get_jongmyo_page(
+    hogwarts: HogwartsHeritageUseCase = Depends(get_hogwarts_heritage_use_case)
+) -> FileResponse:
+    return FileResponse(hogwarts.get_map_page("jongmyo"))

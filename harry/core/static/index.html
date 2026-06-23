@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>문묘 및 성균관 VR 시연 공간</title>
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <style>
+        #quiz-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        #quiz-overlay.active { display: flex; }
+
+        #quiz-box {
+            background: #1a1a2e;
+            border: 2px solid #e94560;
+            border-radius: 14px;
+            padding: 32px 36px;
+            max-width: 480px;
+            width: 90%;
+            color: #eee;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        #quiz-title {
+            font-size: 13px;
+            color: #e94560;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        #quiz-question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 12px 16px;
+            background: #16213e;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #eee;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s;
+        }
+        .quiz-opt:hover:not(:disabled) { background: #0f3460; border-color: #e94560; }
+        .quiz-opt.correct  { background: #1a5c2a; border-color: #2ecc71; color: #fff; }
+        .quiz-opt.wrong    { background: #5c1a1a; border-color: #e74c3c; color: #fff; }
+        .quiz-opt:disabled { cursor: default; }
+
+        #quiz-feedback {
+            margin-top: 14px;
+            font-size: 15px;
+            min-height: 22px;
+            font-weight: bold;
+        }
+        #quiz-feedback.ok  { color: #2ecc71; }
+        #quiz-feedback.err { color: #e74c3c; }
+
+        #quiz-close {
+            display: none;
+            margin-top: 18px;
+            padding: 10px 28px;
+            background: #e94560;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        #quiz-close:hover { background: #c73652; }
+        #quiz-close.quiz-close-correct               { background: #27ae60; }
+        #quiz-close.quiz-close-correct:hover         { background: #2ecc71; }
+        #quiz-close.quiz-close-retry                 { background: #7f8c8d; }
+        #quiz-close.quiz-close-retry:hover           { background: #95a5a6; }
+
+        .a-cursor { display: none !important; }
+        canvas { cursor: none; }
+
+        #hud {
+            position: fixed; bottom: 10px; left: 10px;
+            color: #fff; font-size: 13px;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 10px; border-radius: 6px;
+            font-family: sans-serif;
+            pointer-events: none;
+        }
+        #score-display {
+            position: fixed; top: 12px; right: 14px;
+            z-index: 999;
+            color: #fff; font-size: 18px; font-weight: bold;
+            background: rgba(0,0,0,0.55);
+            padding: 8px 18px; border-radius: 10px;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        #score-popup {
+            display: none;
+            position: fixed; top: 58px; right: 14px;
+            z-index: 999;
+            color: #2ecc71; font-size: 22px; font-weight: bold;
+            font-family: 'Malgun Gothic', sans-serif;
+            animation: fadeup 1s forwards;
+        }
+        @keyframes fadeup {
+            0%   { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+
+        #dialogue-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            z-index: 90;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 48px;
+            pointer-events: none;
+        }
+        #dialogue-overlay.active { display: flex; }
+
+        #dialogue-box {
+            background: rgba(12, 8, 2, 0.93);
+            border: 2px solid #c8a04a;
+            border-radius: 12px;
+            padding: 22px 30px;
+            max-width: 640px;
+            width: 90%;
+            color: #f0e6cc;
+            font-family: 'Malgun Gothic', sans-serif;
+            pointer-events: all;
+            box-shadow: 0 0 24px rgba(200,160,74,0.25);
+        }
+        #dialogue-speaker {
+            font-size: 14px;
+            color: #c8a04a;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        #dialogue-text {
+            font-size: 16px;
+            line-height: 1.85;
+            min-height: 54px;
+        }
+        #dialogue-next {
+            display: block;
+            margin-top: 14px;
+            margin-left: auto;
+            padding: 7px 20px;
+            background: #c8a04a;
+            border: none;
+            border-radius: 6px;
+            color: #120c00;
+            font-size: 13px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        #dialogue-next:hover { background: #d4b060; }
+    </style>
+
+    <script>
+        const LOCAL_QUIZZES = [
+            {
+                title: '🏯 문화재 - 서울 문묘 및 성균관',
+                question: '조선시대 최고 교육기관인 성균관에서 유생들이 모여 강의를 듣고 공부하던 대형 강의실의 이름은 무엇인가요?',
+                options: ['대성전', '명륜당', '동재', '집현전'],
+                answer: 1,
+                correct_dialogue: [
+                    { speaker: '🎓 성균관 대사성', text: '오오! 바로 명륜당이라네! 성균관의 핵심을 단번에 꿰뚫었구나.' },
+                    { speaker: '🎓 성균관 대사성', text: '자네야말로 성균관 유생의 자질이 충분하이. 앞으로도 학문을 게을리하지 말게나!' }
+                ]
+            }
+        ];
+
+        const LOCAL_DIALOGUES = {
+            mrd: [
+                { speaker: '🎓 성균관 대사성', text: '허허, 처음 보는 얼굴이구나. 이곳은 조선의 최고 교육기관인 성균관과 성현들을 모시는 문묘라네.' },
+                { speaker: '🚶 방문객 (나)',   text: '안녕하세요! 유생들이 이곳에서 밤낮으로 글 읽는 소리가 들리는 것만 같아요.' },
+                { speaker: '🎓 성균관 대사성', text: '과연 그렇다네. 이곳 명륜당에서 수많은 인재가 나라를 위해 학문을 닦았지.' },
+                { speaker: '🚶 방문객 (나)',   text: '저도 이곳을 더 둘러보고 싶은데, 혹시 성균관의 유생이 될 자격이 있는지 시험해 주실 수 있나요?' },
+                { speaker: '🎓 성균관 대사성', text: '기개가 아주 기특하구나! 그렇다면 내 성균관과 문묘에 관한 문제를 하나 내볼 테니, 실력을 보여주겠느냐?' }
+            ]
+        };
+
+        const cooldowns = {};
+        const dialogueCooldowns = {};
+        let quizOpen = false;
+        let dialogueOpen = false;
+        let score = 0;
+        let isFlying = false;
+
+        let _dlgLines = [], _dlgIndex = 0, _dlgQuizIndex = -1, _dlgNpcId = '';
+        let _typeTimer = null;
+
+        async function showDialogue(npcId, quizIndex) {
+            if (dialogueOpen || quizOpen) return;
+            if (Date.now() < (dialogueCooldowns[npcId] || 0)) return;
+
+            _dlgNpcId = npcId;
+            _dlgQuizIndex = quizIndex;
+            dialogueOpen = true;
+            setMovement(false);
+
+            let lines = LOCAL_DIALOGUES[npcId] || [];
+            try {
+                const res = await fetch(`/api/dialogue/${npcId}`);
+                if (res.ok) lines = await res.json();
+            } catch (_) {}
+
+            _dlgLines = lines;
+            _dlgIndex = 0;
+            document.getElementById('dialogue-overlay').classList.add('active');
+            _showDlgLine(0);
+        }
+
+        function _showDlgLine(i) {
+            const line = _dlgLines[i];
+            document.getElementById('dialogue-speaker').textContent = line.speaker;
+            const isLast = i === _dlgLines.length - 1;
+            document.getElementById('dialogue-next').textContent =
+                isLast
+                    ? (_dlgNpcId === '__quiz_correct__' ? '지도로 돌아가기 ▶' : '퀴즈 시작 ▶')
+                    : '다음 ▶';
+            _typewrite(document.getElementById('dialogue-text'), line.text);
+        }
+
+        function _typewrite(el, text) {
+            clearInterval(_typeTimer);
+            el.textContent = '';
+            let i = 0;
+            _typeTimer = setInterval(() => { el.textContent += text[i++]; if (i >= text.length) clearInterval(_typeTimer); }, 35);
+        }
+
+        function advanceDialogue() {
+            clearInterval(_typeTimer);
+            const el = document.getElementById('dialogue-text');
+            if (el.textContent.length < _dlgLines[_dlgIndex].text.length) {
+                el.textContent = _dlgLines[_dlgIndex].text;
+                return;
+            }
+            _dlgIndex++;
+            if (_dlgIndex < _dlgLines.length) {
+                _showDlgLine(_dlgIndex);
+            } else {
+                document.getElementById('dialogue-overlay').classList.remove('active');
+                dialogueOpen = false;
+                if (_dlgNpcId !== '__quiz_correct__') {
+                    dialogueCooldowns[_dlgNpcId] = Date.now() + 3000;
+                }
+                if (_dlgQuizIndex >= 0) {
+                    _openQuizDirect(_dlgQuizIndex);
+                } else {
+                    setMovement(true);
+                }
+            }
+        }
+
+        const buildingBoxes = [];
+        const debugHelpers = [];
+
+        function setMovement(enabled) {
+            const cam = document.querySelector('a-camera');
+            if (cam) cam.setAttribute('wasd-controls', 'enabled: ' + enabled);
+        }
+
+        function updateScore(delta) {
+            score += delta;
+            document.getElementById('score-value').textContent = score;
+            const pop = document.getElementById('score-popup');
+            pop.textContent = '+' + delta + '점!';
+            pop.style.display = 'block';
+            pop.style.animation = 'none';
+            pop.offsetHeight; 
+            pop.style.animation = 'fadeup 1s forwards';
+            setTimeout(() => { pop.style.display = 'none'; }, 1000);
+        }
+
+        function _openQuizDirect(zoneIndex) {
+            const q = LOCAL_QUIZZES[zoneIndex];
+            if (!q) { setMovement(true); return; }
+            quizOpen = true;
+            document.getElementById('quiz-title').textContent    = q.title;
+            document.getElementById('quiz-question').textContent = q.question;
+            const buttons = document.querySelectorAll('.quiz-opt');
+            buttons.forEach((btn, i) => {
+                btn.textContent = q.options[i] || '';
+                btn.className   = 'quiz-opt';
+                btn.disabled    = false;
+                btn.onclick     = () => handleAnswer(i, zoneIndex);
+            });
+            const closeBtn = document.getElementById('quiz-close');
+            document.getElementById('quiz-feedback').textContent = '';
+            document.getElementById('quiz-feedback').className   = '';
+            closeBtn.style.display  = 'none';
+            closeBtn.className      = '';
+            closeBtn.textContent    = '계속 탐방하기';
+            closeBtn.onclick        = closeQuiz;
+            document.getElementById('quiz-overlay').classList.add('active');
+        }
+
+        async function showQuiz(zoneIndex) {
+            if (quizOpen) return;
+            if (Date.now() < (cooldowns[zoneIndex] || 0)) return;
+
+            let q;
+            try {
+                const res = await fetch(`/api/quiz/${zoneIndex}`);
+                if (res.ok) q = await res.json();
+            } catch (_) {}
+            if (!q) q = LOCAL_QUIZZES[zoneIndex];
+            if (!q) return;
+
+            quizOpen = true;
+            setMovement(false);
+
+            document.getElementById('quiz-title').textContent = q.title;
+            document.getElementById('quiz-question').textContent = q.question;
+
+            const buttons = document.querySelectorAll('.quiz-opt');
+            buttons.forEach((btn, i) => {
+                btn.textContent = q.options[i];
+                btn.className = 'quiz-opt';
+                btn.disabled = false;
+                btn.onclick = () => handleAnswer(i, zoneIndex);
+            });
+
+            document.getElementById('quiz-feedback').textContent = '';
+            document.getElementById('quiz-feedback').className = '';
+            document.getElementById('quiz-close').style.display = 'none';
+            document.getElementById('quiz-overlay').classList.add('active');
+        }
+
+        async function handleAnswer(selected, zoneIndex) {
+            const buttons = document.querySelectorAll('.quiz-opt');
+            buttons.forEach(btn => btn.disabled = true);
+
+            let isCorrect, correctIndex, msg, btn, correctDialogue = [];
+            try {
+                const res = await fetch('/api/quiz/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ zone_id: zoneIndex, selected })
+                });
+                const data = await res.json();
+                isCorrect       = data.correct;
+                correctIndex    = data.correct_index;
+                msg             = data.message;
+                btn             = data.button;
+                correctDialogue = data.correct_dialogue || [];
+            } catch (_) {
+                const q = LOCAL_QUIZZES[zoneIndex];
+                if (!q) return;
+                correctIndex    = q.answer;
+                isCorrect       = selected === correctIndex;
+                correctDialogue = (isCorrect && q.correct_dialogue) ? q.correct_dialogue : [];
+            }
+
+            buttons[selected].classList.add(isCorrect ? 'correct' : 'wrong');
+            if (!isCorrect) buttons[correctIndex].classList.add('correct');
+
+            const fb       = document.getElementById('quiz-feedback');
+            const closeBtn = document.getElementById('quiz-close');
+
+            if (isCorrect) {
+                fb.textContent       = msg || '✅ 정답입니다! +10점';
+                fb.className         = 'ok';
+                updateScore(10);
+                closeBtn.textContent = btn || '지도로 돌아가기';
+                closeBtn.className   = 'quiz-close-correct';
+                closeBtn.onclick     = () => {
+                    closeQuiz();
+                    if (correctDialogue.length > 0) _showCorrectDialogue(correctDialogue);
+                };
+                cooldowns[zoneIndex] = Date.now() + 60000;
+            } else {
+                fb.textContent       = msg || ('❌ 오답입니다. 나중에 다시 도전해보세요!');
+                fb.className         = 'err';
+                closeBtn.textContent = btn || '나중에 다시 도전하기';
+                closeBtn.className   = 'quiz-close-retry';
+                closeBtn.onclick     = closeQuiz;
+                cooldowns[zoneIndex] = 0;
+            }
+
+            closeBtn.style.display = 'inline-block';
+        }
+
+        function closeQuiz() {
+            document.getElementById('quiz-overlay').classList.remove('active');
+            quizOpen = false;
+            setMovement(true);
+        }
+
+        function _showCorrectDialogue(lines) {
+            if (!lines || lines.length === 0) return;
+            setMovement(false);
+            _dlgLines     = lines;
+            _dlgIndex     = 0;
+            _dlgQuizIndex = -1;
+            _dlgNpcId     = '__quiz_correct__';
+            dialogueOpen  = true;
+            document.getElementById('dialogue-overlay').classList.add('active');
+            _showDlgLine(0);
+        }
+
+        let debugVisible = false;
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyC') {
+                debugVisible = !debugVisible;
+                const scene3D = document.querySelector('a-scene').object3D;
+                if (debugVisible) {
+                    for (const b of buildingBoxes) {
+                        const box3 = new THREE.Box3(
+                            new THREE.Vector3(b.minX, b.minY, b.minZ),
+                            new THREE.Vector3(b.maxX, b.topY,  b.maxZ)
+                        );
+                        const helper = new THREE.Box3Helper(box3, new THREE.Color(0x00ff00));
+                        scene3D.add(helper);
+                        debugHelpers.push(helper);
+                    }
+                } else {
+                    debugHelpers.forEach(h => scene3D.remove(h));
+                    debugHelpers.length = 0;
+                }
+            }
+        });
+
+        AFRAME.registerComponent('building-solid', {
+            schema: {
+                portal:    { type: 'boolean', default: false },
+                eventNpc:  { type: 'string',  default: '' },
+                quizIndex: { type: 'int',     default: -1 }
+            },
+            init: function () {
+                this.el.addEventListener('model-loaded', () => {
+                    const mesh = this.el.getObject3D('mesh');
+                    if (!mesh) return;
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    buildingBoxes.push({
+                        minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
+                        minZ: box.min.z - 0.3, maxZ: box.max.z + 0.3,
+                        minY: box.min.y,        topY: box.max.y,
+                        isPortal:  this.data.portal,
+                        eventNpc:  this.data.eventNpc,
+                        quizIndex: this.data.quizIndex
+                    });
+                });
+            }
+        });
+
+        AFRAME.registerComponent('double-click-fly', {
+            init: function () {
+                this._onDblClick = () => {
+                    if (quizOpen) return;
+                    
+                    isFlying = !isFlying;
+                    const hud = document.getElementById('hud');
+
+                    if (isFlying) {
+                        this.el.setAttribute('wasd-controls', 'acceleration: 90; fly: true');
+                        this.el.object3D.position.y += 1.5; 
+                        hud.textContent = "WASD 이동 · 시선 방향 비행 | 🚀 비행 모드 ON (더블클릭 시 착지)";
+                    } else {
+                        this.el.setAttribute('wasd-controls', 'acceleration: 80; fly: false');
+                        hud.textContent = "WASD 이동 · Space 점프 | 🚶 지상 모드 (더블클릭 시 비행)";
+                    }
+                };
+                window.addEventListener('dblclick', this._onDblClick);
+            },
+            remove: function () {
+                window.removeEventListener('dblclick', this._onDblClick);
+            }
+        });
+
+        AFRAME.registerComponent('player-collider', {
+            init: function () {
+                this.defaultGroundY = 1.6;
+                this.vy             = 0;
+                this.grounded       = true;
+                this.inEventZone    = {};
+
+                this._jump = (e) => {
+                    if (e.code === 'Space' && this.grounded && !quizOpen && !dialogueOpen && !isFlying) {
+                        this.vy = 8;
+                        this.grounded = false;
+                    }
+                };
+                window.addEventListener('keydown', this._jump);
+            },
+            remove: function () {
+                window.removeEventListener('keydown', this._jump);
+            },
+            tick: function (t, delta) {
+                const pos = this.el.object3D.position;
+
+                if (!isFlying) {
+                    const dt = Math.min(delta, 100) / 1000;
+
+                    let currentGroundY = this.defaultGroundY;
+                    for (const b of buildingBoxes) {
+                        if (pos.x >= b.minX && pos.x <= b.maxX && pos.z >= b.minZ && pos.z <= b.maxZ) {
+                            const surfaceY = b.topY + 1.6;
+                            if (surfaceY > currentGroundY && pos.y >= surfaceY - 2.5) {
+                                currentGroundY = surfaceY;
+                            }
+                        }
+                    }
+
+                    if (!this.grounded || pos.y > currentGroundY) {
+                        this.vy -= 22 * dt;
+                        pos.y  += this.vy * dt;
+                    }
+
+                    if (pos.y <= currentGroundY) {
+                        pos.y         = currentGroundY;
+                        this.vy       = 0;
+                        this.grounded = true;
+                    }
+
+                    const R = 0.4;
+                    for (const b of buildingBoxes) {
+                        if ((pos.y - 1.6) >= b.topY) continue;
+                        const overlapX = pos.x + R > b.minX && pos.x - R < b.maxX;
+                        const overlapZ = pos.z + R > b.minZ && pos.z - R < b.maxZ;
+
+                        if (!overlapX || !overlapZ) {
+                            if (b.eventNpc) this.inEventZone[b.eventNpc] = false;
+                            continue;
+                        }
+
+                        if (b.eventNpc && !this.inEventZone[b.eventNpc]) {
+                            this.inEventZone[b.eventNpc] = true;
+                            showDialogue(b.eventNpc, b.quizIndex);
+                        }
+
+                        const toLeft  = pos.x - (b.minX - R);
+                        const toRight = (b.maxX + R) - pos.x;
+                        const toMinZ  = pos.z - (b.minZ - R);
+                        const toMaxZ  = (b.maxZ + R) - pos.z;
+                        const minDist = Math.min(toLeft, toRight, toMinZ, toMaxZ);
+
+                        if (b.isPortal) {
+                            if      (minDist === toLeft)  pos.x = b.maxX + R;
+                            else if (minDist === toRight) pos.x = b.minX - R;
+                            else if (minDist === toMinZ)  pos.z = b.maxZ + R;
+                            else                          pos.z = b.minZ - R;
+                        } else {
+                            if      (minDist === toLeft)  pos.x = b.minX - R;
+                            else if (minDist === toRight) pos.x = b.maxX + R;
+                            else if (minDist === toMinZ)  pos.z = b.minZ - R;
+                            else                          pos.z = b.maxZ + R;
+                        }
+                    }
+                } else {
+                    if (pos.y < this.defaultGroundY) pos.y = this.defaultGroundY;
+                    this.grounded = false;
+                    this.vy       = 0;
+                }
+
+                const minX = -28.5, maxX = 28.5;
+                const minZ = -180.5, maxZ = 16.5;
+                if (pos.x < minX) pos.x = minX;
+                if (pos.x > maxX) pos.x = maxX;
+                if (pos.z < minZ) pos.z = minZ;
+                if (pos.z > maxZ) pos.z = maxZ;
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <div id="score-display">점수: <span id="score-value">0</span></div>
+    <div id="score-popup"></div>
+
+    <div id="dialogue-overlay">
+        <div id="dialogue-box">
+            <div id="dialogue-speaker"></div>
+            <div id="dialogue-text"></div>
+            <button id="dialogue-next" onclick="advanceDialogue()">다음 ▶</button>
+        </div>
+    </div>
+
+    <div id="quiz-overlay">
+        <div id="quiz-box">
+            <div id="quiz-title"></div>
+            <div id="quiz-question"></div>
+            <div id="quiz-options">
+                <button class="quiz-opt"></button>
+                <button class="quiz-opt"></button>
+                <button class="quiz-opt"></button>
+                <button class="quiz-opt"></button>
+            </div>
+            <div id="quiz-feedback"></div>
+            <button id="quiz-close" onclick="closeQuiz()">계속 탐방하기</button>
+        </div>
+    </div>
+
+    <a-scene
+        renderer="antialias: true;
+                  colorManagement: true;
+                  physicallyCorrectLights: false;
+                  maxCanvasWidth: 2560;
+                  maxCanvasHeight: 1440;
+                  pixelRatio: auto;
+                  logarithmicDepthBuffer: false;
+                  powerPreference: high-performance;
+                  sortObjects: false"
+        vr-mode-ui="enabled: false"
+        background="color: #87CEEB"
+        fog="type: none"
+        loading-screen="dotsColor: #fff; backgroundColor: #111">
+
+        <a-light type="ambient" color="#ffffff" intensity="0.9"></a-light>
+        <a-light type="directional" color="#fffaf0" intensity="0.5" position="-1 4 2"></a-light>
+
+        <a-assets timeout="60000">
+            <a-asset-item id="model-dj"   src="map_file/dj.glb"></a-asset-item>
+            <a-asset-item id="model-dm"   src="map_file/dm.glb"></a-asset-item>
+            <a-asset-item id="model-dsj" src="map_file/dsj.glb"></a-asset-item>
+            <a-asset-item id="model-mrd" src="map_file/mrd.glb"></a-asset-item>
+            <a-asset-item id="model-sj"   src="map_file/sj.glb"></a-asset-item>
+            <a-asset-item id="model-sm"   src="map_file/sm.glb"></a-asset-item>
+            <a-asset-item id="model-ssm" src="map_file/ssm.glb"></a-asset-item>
+        </a-assets>
+
+        <a-entity building-solid="portal: true" gltf-model="#model-ssm" position="0 -1 0" scale="1 1 1"></a-entity>
+        <a-entity building-solid="portal: true" gltf-model="#model-dsj" position="1 0 -73" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-dm" position="20 -1 -30" rotation="0 -90 0" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-sm" position="-20 -1 -29" rotation="0 90 0" scale="1 1 1"></a-entity>
+        <a-entity building-solid="eventNpc: mrd; quizIndex: 0" gltf-model="#model-mrd" position="-1 0 -143" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-dj" position="20 -0.45 -105" rotation="0 90 0.85" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-sj" position="-20 -0.45 -105" rotation="0 90 -0.6" scale="1 1 1"></a-entity>
+
+        <a-plane position="0 0 -82" rotation="-90 0 0" width="60" height="200" color="#B37D4E"></a-plane>
+
+        <!-- 남측 담장 -->
+        <a-entity position="0 0 18">
+            <!-- 하단 돌 기단 -->
+            <a-box position="0 0.4 0" width="60" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <!-- 메인 담장 몸체 (가로선 제거 후 3번째 황토색 #C39B78로 전체 통합) -->
+            <a-box position="0 1.8 0" width="60" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <!-- 상단 마감 흰 띠 및 기와 지붕 -->
+            <a-box position="0 2.85 0" width="60" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="61" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <!-- 북측 담장 -->
+        <a-entity position="0 0 -182">
+            <a-box position="0 0.4 0" width="60" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="60" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="60" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="61" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <!-- 서측 담장 -->
+        <a-entity position="-30 0 -82" rotation="0 90 0">
+            <a-box position="0 0.4 0" width="200" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="200" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="200" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="201" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <!-- 동측 담장 -->
+        <a-entity position="30 0 -82" rotation="0 90 0">
+            <a-box position="0 0.4 0" width="200" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="200" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="200" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="201" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <a-camera position="0 1.6 5"
+                  look-controls="pointerLockEnabled: false"
+                  wasd-controls="acceleration: 80; fly: false"
+                  raycaster="enabled: false"
+                  player-collider
+                  double-click-fly
+                  camera="near: 0.1; far: 1000">
+        </a-camera>
+
+    </a-scene>
+
+    <div id="hud">WASD 이동 · Space 점프 · C 충돌박스 | 🚶 지상 모드 (더블클릭 시 비행)</div>
+
+</body>
+</html>
