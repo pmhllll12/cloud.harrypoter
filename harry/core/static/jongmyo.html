@@ -7,86 +7,6 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
     <style>
-        #quiz-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.65);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        #quiz-overlay.active { display: flex; }
-
-        #quiz-box {
-            background: #1a1a2e;
-            border: 2px solid #e94560;
-            border-radius: 14px;
-            padding: 32px 36px;
-            max-width: 480px;
-            width: 90%;
-            color: #eee;
-            font-family: 'Malgun Gothic', sans-serif;
-        }
-        #quiz-title {
-            font-size: 13px;
-            color: #e94560;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        #quiz-question {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .quiz-opt {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 12px 16px;
-            background: #16213e;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: #eee;
-            font-size: 15px;
-            font-family: inherit;
-            cursor: pointer;
-            text-align: left;
-            transition: background 0.15s;
-        }
-        .quiz-opt:hover:not(:disabled) { background: #0f3460; border-color: #e94560; }
-        .quiz-opt.correct  { background: #1a5c2a; border-color: #2ecc71; color: #fff; }
-        .quiz-opt.wrong    { background: #5c1a1a; border-color: #e74c3c; color: #fff; }
-        .quiz-opt:disabled { cursor: default; }
-
-        #quiz-feedback {
-            margin-top: 14px;
-            font-size: 15px;
-            min-height: 22px;
-            font-weight: bold;
-        }
-        #quiz-feedback.ok  { color: #2ecc71; }
-        #quiz-feedback.err { color: #e74c3c; }
-
-        #quiz-close {
-            display: none;
-            margin-top: 18px;
-            padding: 10px 28px;
-            background: #e94560;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 15px;
-            font-family: inherit;
-            cursor: pointer;
-        }
-        #quiz-close:hover { background: #c73652; }
-        #quiz-close.quiz-close-correct               { background: #27ae60; }
-        #quiz-close.quiz-close-correct:hover         { background: #2ecc71; }
-        #quiz-close.quiz-close-retry                 { background: #7f8c8d; }
-        #quiz-close.quiz-close-retry:hover           { background: #95a5a6; }
-
         .a-cursor { display: none !important; }
         canvas { cursor: none; }
 
@@ -98,323 +18,13 @@
             font-family: sans-serif;
             pointer-events: none;
         }
-        #score-display {
-            position: fixed; top: 12px; right: 14px;
-            z-index: 999;
-            color: #fff; font-size: 18px; font-weight: bold;
-            background: rgba(0,0,0,0.55);
-            padding: 8px 18px; border-radius: 10px;
-            font-family: 'Malgun Gothic', sans-serif;
-        }
-        #score-popup {
-            display: none;
-            position: fixed; top: 58px; right: 14px;
-            z-index: 999;
-            color: #2ecc71; font-size: 22px; font-weight: bold;
-            font-family: 'Malgun Gothic', sans-serif;
-            animation: fadeup 1s forwards;
-        }
-        @keyframes fadeup {
-            0%   { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-30px); }
-        }
-
-        #dialogue-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            z-index: 90;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 48px;
-            pointer-events: none;
-        }
-        #dialogue-overlay.active { display: flex; }
-
-        #dialogue-box {
-            background: rgba(12, 8, 2, 0.93);
-            border: 2px solid #c8a04a;
-            border-radius: 12px;
-            padding: 22px 30px;
-            max-width: 640px;
-            width: 90%;
-            color: #f0e6cc;
-            font-family: 'Malgun Gothic', sans-serif;
-            pointer-events: all;
-            box-shadow: 0 0 24px rgba(200,160,74,0.25);
-        }
-        #dialogue-speaker {
-            font-size: 14px;
-            color: #c8a04a;
-            font-weight: bold;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-        #dialogue-text {
-            font-size: 16px;
-            line-height: 1.85;
-            min-height: 54px;
-        }
-        #dialogue-next {
-            display: block;
-            margin-top: 14px;
-            margin-left: auto;
-            padding: 7px 20px;
-            background: #c8a04a;
-            border: none;
-            border-radius: 6px;
-            color: #120c00;
-            font-size: 13px;
-            font-weight: bold;
-            font-family: inherit;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-        }
-        #dialogue-next:hover { background: #d4b060; }
     </style>
 
     <script>
-        const LOCAL_QUIZZES = [
-            {
-                title: '🏛️ 문화재 - 서울 종묘',
-                question: '종묘 정전은 조선 역대 왕과 왕비의 신주를 모시는 건물로, 단일 목조 건축물로는 국내 최장 길이를 자랑합니다. 종묘가 유네스코 세계문화유산으로 등재된 연도는 언제인가요?',
-                options: ['1985년', '1990년', '1995년', '2000년'],
-                answer: 2,
-                correct_dialogue: [
-                    { speaker: '🎎 종묘 수직관', text: '정확합니다! 종묘는 1995년 유네스코 세계문화유산으로 등재되었습니다.' },
-                    { speaker: '🎎 종묘 수직관', text: '이후 1464년 전통 그대로 이어온 종묘제례와 종묘제례악도 2001년 유네스코 인류무형문화유산으로 지정되었지요. 정말 소중한 우리 문화재랍니다!' }
-                ]
-            }
-        ];
-
-        const LOCAL_DIALOGUES = {
-            jongmyo_npc: [
-                { speaker: '🎎 종묘 수직관', text: '어서 오십시오. 이곳은 조선 역대 왕과 왕비의 신주(神主)를 봉안하고 제사를 지내는 왕실 사당, 종묘(宗廟)입니다.' },
-                { speaker: '🚶 방문객 (나)',   text: '정말 웅장하군요. 이 긴 건물이 모두 정전인가요?' },
-                { speaker: '🎎 종묘 수직관', text: '그렇습니다. 정전은 태조 이성계 때 처음 지어졌으며, 시대가 흐를수록 신주가 늘어나 지금의 긴 모습이 되었지요. 현재 49위의 신주가 모셔져 있답니다.' },
-                { speaker: '🚶 방문객 (나)',   text: '그렇군요. 더 알고 싶은데, 혹시 종묘에 관한 문제를 내주실 수 있나요?' },
-                { speaker: '🎎 종묘 수직관', text: '물론이죠! 종묘의 역사와 가치에 대한 문제를 하나 내드리겠습니다. 잘 생각해 보세요.' }
-            ]
-        };
-
-        const cooldowns = {};
-        const dialogueCooldowns = {};
-        let quizOpen = false;
-        let dialogueOpen = false;
-        let score = 0;
-        let isFlying = false;
-
-        let _dlgLines = [], _dlgIndex = 0, _dlgQuizIndex = -1, _dlgNpcId = '';
-        let _typeTimer = null;
-
-        async function showDialogue(npcId, quizIndex) {
-            if (dialogueOpen || quizOpen) return;
-            if (Date.now() < (dialogueCooldowns[npcId] || 0)) return;
-
-            _dlgNpcId = npcId;
-            _dlgQuizIndex = quizIndex;
-            dialogueOpen = true;
-            setMovement(false);
-
-            let lines = LOCAL_DIALOGUES[npcId] || [];
-            try {
-                const res = await fetch(`/api/dialogue/${npcId}`);
-                if (res.ok) lines = await res.json();
-            } catch (_) {}
-
-            _dlgLines = lines;
-            _dlgIndex = 0;
-            document.getElementById('dialogue-overlay').classList.add('active');
-            _showDlgLine(0);
-        }
-
-        function _showDlgLine(i) {
-            const line = _dlgLines[i];
-            document.getElementById('dialogue-speaker').textContent = line.speaker;
-            const isLast = i === _dlgLines.length - 1;
-            document.getElementById('dialogue-next').textContent =
-                isLast
-                    ? (_dlgNpcId === '__quiz_correct__' ? '지도로 돌아가기 ▶' : '퀴즈 시작 ▶')
-                    : '다음 ▶';
-            _typewrite(document.getElementById('dialogue-text'), line.text);
-        }
-
-        function _typewrite(el, text) {
-            clearInterval(_typeTimer);
-            el.textContent = '';
-            let i = 0;
-            _typeTimer = setInterval(() => { el.textContent += text[i++]; if (i >= text.length) clearInterval(_typeTimer); }, 35);
-        }
-
-        function advanceDialogue() {
-            clearInterval(_typeTimer);
-            const el = document.getElementById('dialogue-text');
-            if (el.textContent.length < _dlgLines[_dlgIndex].text.length) {
-                el.textContent = _dlgLines[_dlgIndex].text;
-                return;
-            }
-            _dlgIndex++;
-            if (_dlgIndex < _dlgLines.length) {
-                _showDlgLine(_dlgIndex);
-            } else {
-                document.getElementById('dialogue-overlay').classList.remove('active');
-                dialogueOpen = false;
-                if (_dlgNpcId !== '__quiz_correct__') {
-                    dialogueCooldowns[_dlgNpcId] = Date.now() + 3000;
-                }
-                if (_dlgQuizIndex >= 0) {
-                    _openQuizDirect(_dlgQuizIndex);
-                } else {
-                    setMovement(true);
-                }
-            }
-        }
-
         const buildingBoxes = [];
         const debugHelpers = [];
 
-        function setMovement(enabled) {
-            const cam = document.querySelector('a-camera');
-            if (cam) cam.setAttribute('wasd-controls', 'enabled: ' + enabled);
-        }
-
-        function updateScore(delta) {
-            score += delta;
-            document.getElementById('score-value').textContent = score;
-            const pop = document.getElementById('score-popup');
-            pop.textContent = '+' + delta + '점!';
-            pop.style.display = 'block';
-            pop.style.animation = 'none';
-            pop.offsetHeight;
-            pop.style.animation = 'fadeup 1s forwards';
-            setTimeout(() => { pop.style.display = 'none'; }, 1000);
-        }
-
-        function _openQuizDirect(zoneIndex) {
-            const q = LOCAL_QUIZZES[zoneIndex];
-            if (!q) { setMovement(true); return; }
-            quizOpen = true;
-            document.getElementById('quiz-title').textContent    = q.title;
-            document.getElementById('quiz-question').textContent = q.question;
-            const buttons = document.querySelectorAll('.quiz-opt');
-            buttons.forEach((btn, i) => {
-                btn.textContent = q.options[i] || '';
-                btn.className   = 'quiz-opt';
-                btn.disabled    = false;
-                btn.onclick     = () => handleAnswer(i, zoneIndex);
-            });
-            const closeBtn = document.getElementById('quiz-close');
-            document.getElementById('quiz-feedback').textContent = '';
-            document.getElementById('quiz-feedback').className   = '';
-            closeBtn.style.display  = 'none';
-            closeBtn.className      = '';
-            closeBtn.textContent    = '계속 탐방하기';
-            closeBtn.onclick        = closeQuiz;
-            document.getElementById('quiz-overlay').classList.add('active');
-        }
-
-        async function showQuiz(zoneIndex) {
-            if (quizOpen) return;
-            if (Date.now() < (cooldowns[zoneIndex] || 0)) return;
-
-            let q;
-            try {
-                const res = await fetch(`/api/quiz/${zoneIndex}`);
-                if (res.ok) q = await res.json();
-            } catch (_) {}
-            if (!q) q = LOCAL_QUIZZES[zoneIndex];
-            if (!q) return;
-
-            quizOpen = true;
-            setMovement(false);
-
-            document.getElementById('quiz-title').textContent = q.title;
-            document.getElementById('quiz-question').textContent = q.question;
-
-            const buttons = document.querySelectorAll('.quiz-opt');
-            buttons.forEach((btn, i) => {
-                btn.textContent = q.options[i];
-                btn.className = 'quiz-opt';
-                btn.disabled = false;
-                btn.onclick = () => handleAnswer(i, zoneIndex);
-            });
-
-            document.getElementById('quiz-feedback').textContent = '';
-            document.getElementById('quiz-feedback').className = '';
-            document.getElementById('quiz-close').style.display = 'none';
-            document.getElementById('quiz-overlay').classList.add('active');
-        }
-
-        async function handleAnswer(selected, zoneIndex) {
-            const buttons = document.querySelectorAll('.quiz-opt');
-            buttons.forEach(btn => btn.disabled = true);
-
-            let isCorrect, correctIndex, msg, btn, correctDialogue = [];
-            try {
-                const res = await fetch('/api/quiz/check', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ zone_id: zoneIndex, selected })
-                });
-                const data = await res.json();
-                isCorrect       = data.correct;
-                correctIndex    = data.correct_index;
-                msg             = data.message;
-                btn             = data.button;
-                correctDialogue = data.correct_dialogue || [];
-            } catch (_) {
-                const q = LOCAL_QUIZZES[zoneIndex];
-                if (!q) return;
-                correctIndex    = q.answer;
-                isCorrect       = selected === correctIndex;
-                correctDialogue = (isCorrect && q.correct_dialogue) ? q.correct_dialogue : [];
-            }
-
-            buttons[selected].classList.add(isCorrect ? 'correct' : 'wrong');
-            if (!isCorrect) buttons[correctIndex].classList.add('correct');
-
-            const fb       = document.getElementById('quiz-feedback');
-            const closeBtn = document.getElementById('quiz-close');
-
-            if (isCorrect) {
-                fb.textContent       = msg || '✅ 정답입니다! +10점';
-                fb.className         = 'ok';
-                updateScore(10);
-                closeBtn.textContent = btn || '지도로 돌아가기';
-                closeBtn.className   = 'quiz-close-correct';
-                closeBtn.onclick     = () => {
-                    closeQuiz();
-                    if (correctDialogue.length > 0) _showCorrectDialogue(correctDialogue);
-                };
-                cooldowns[zoneIndex] = Date.now() + 60000;
-            } else {
-                fb.textContent       = msg || '❌ 오답입니다. 나중에 다시 도전해보세요!';
-                fb.className         = 'err';
-                closeBtn.textContent = btn || '나중에 다시 도전하기';
-                closeBtn.className   = 'quiz-close-retry';
-                closeBtn.onclick     = closeQuiz;
-                cooldowns[zoneIndex] = 0;
-            }
-
-            closeBtn.style.display = 'inline-block';
-        }
-
-        function closeQuiz() {
-            document.getElementById('quiz-overlay').classList.remove('active');
-            quizOpen = false;
-            setMovement(true);
-        }
-
-        function _showCorrectDialogue(lines) {
-            if (!lines || lines.length === 0) return;
-            setMovement(false);
-            _dlgLines     = lines;
-            _dlgIndex     = 0;
-            _dlgQuizIndex = -1;
-            _dlgNpcId     = '__quiz_correct__';
-            dialogueOpen  = true;
-            document.getElementById('dialogue-overlay').classList.add('active');
-            _showDlgLine(0);
-        }
+        let isFlying = false;
 
         let debugVisible = false;
         window.addEventListener('keydown', (e) => {
@@ -440,10 +50,8 @@
 
         AFRAME.registerComponent('building-solid', {
             schema: {
-                portal:    { type: 'boolean', default: false },
-                eventNpc:  { type: 'string',  default: '' },
-                quizIndex: { type: 'int',     default: -1 },
-                split:     { type: 'boolean', default: false }
+                portal: { type: 'boolean', default: false },
+                split:  { type: 'boolean', default: false }
             },
             init: function () {
                 this.el.addEventListener('model-loaded', () => {
@@ -456,54 +64,48 @@
                         const totalZ = box.max.z - box.min.z;
 
                         // Z 분할: 뒤 40% = 건물 벽, 앞 60% = 돌바닥 두 구역
-                        const wallFrontZ  = box.min.z + totalZ * 0.45; // 건물 벽 앞 경계
-                        const floorMidZ   = box.min.z + totalZ * 0.88; // 아래·위 돌바닥 경계
+                        const wallFrontZ = box.min.z + totalZ * 0.45;
+                        const floorMidZ  = box.min.z + totalZ * 0.88;
 
-                        // 아래 돌바닥: 가장 앞쪽 35%, 낮은 표면 (전체 높이의 11%)
+                        // 아래 돌바닥
                         buildingBoxes.push({
                             minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
                             minZ: floorMidZ,        maxZ: box.max.z + 0.3,
                             minY: box.min.y,        topY: box.min.y + totalH * 0.09,
-                            isPortal: false, eventNpc: '', quizIndex: -1
+                            isPortal: false
                         });
 
-                        // 위 돌바닥: 중간 25%, 더 높은 표면 (전체 높이의 20%)
+                        // 위 돌바닥
                         buildingBoxes.push({
                             minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
                             minZ: wallFrontZ,       maxZ: floorMidZ,
                             minY: box.min.y,        topY: box.min.y + totalH * 0.17,
-                            isPortal: false, eventNpc: '', quizIndex: -1
+                            isPortal: false
                         });
 
-                        // 건물 벽: 뒤 40%, 전체 높이 — 퀴즈 트리거
+                        // 건물 벽
                         buildingBoxes.push({
                             minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
                             minZ: box.min.z - 0.3, maxZ: wallFrontZ,
                             minY: box.min.y,        topY: box.max.y,
-                            isPortal: false,
-                            eventNpc:  this.data.eventNpc,
-                            quizIndex: this.data.quizIndex
+                            isPortal: false
                         });
                     } else {
                         buildingBoxes.push({
                             minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
                             minZ: box.min.z - 0.3, maxZ: box.max.z + 0.3,
                             minY: box.min.y,        topY: box.max.y,
-                            isPortal:  this.data.portal,
-                            eventNpc:  this.data.eventNpc,
-                            quizIndex: this.data.quizIndex
+                            isPortal: this.data.portal
                         });
                     }
 
                     // 바운딩 박스 기준으로 바닥·담장·이동범위 자동 조정
-                    // 앞(+Z)만 넓게, 나머지 3면은 좁게
                     const PAD_FRONT = 25, PAD_SIDE = 5;
                     const x0 = box.min.x - PAD_SIDE, x1 = box.max.x + PAD_SIDE;
                     const z0 = box.min.z - PAD_SIDE, z1 = box.max.z + PAD_FRONT;
                     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
                     const w  = x1 - x0,        d  = z1 - z0;
 
-                    // 바닥
                     const floor = document.getElementById('map-floor');
                     if (floor) {
                         floor.setAttribute('position', `${cx} 0 ${cz}`);
@@ -511,44 +113,27 @@
                         floor.setAttribute('height', d);
                     }
 
-                    // 담장 위치/크기 갱신
-                    function setWall(id, px, py, pz, wx, wy, wz) {
-                        const el = document.getElementById(id);
-                        if (!el) return;
-                        el.object3D.position.set(px, py, pz);
-                        el.querySelectorAll('a-box').forEach((b, i) => {
-                            b.setAttribute('width',  wx[i]);
-                            b.setAttribute('height', wy[i]);
-                            b.setAttribute('depth',  wz[i]);
-                        });
-                    }
-
-                    // 남(+Z)
                     const sWall = document.getElementById('wall-south');
                     if (sWall) {
                         sWall.object3D.position.set(cx, 0, z1);
                         sWall.querySelectorAll('a-box').forEach(b => b.setAttribute('width', w + 2));
                     }
-                    // 북(-Z)
                     const nWall = document.getElementById('wall-north');
                     if (nWall) {
                         nWall.object3D.position.set(cx, 0, z0);
                         nWall.querySelectorAll('a-box').forEach(b => b.setAttribute('width', w + 2));
                     }
-                    // 서(-X)
                     const wWall = document.getElementById('wall-west');
                     if (wWall) {
                         wWall.object3D.position.set(x0, 0, cz);
                         wWall.querySelectorAll('a-box').forEach(b => b.setAttribute('width', d + 2));
                     }
-                    // 동(+X)
                     const eWall = document.getElementById('wall-east');
                     if (eWall) {
                         eWall.object3D.position.set(x1, 0, cz);
                         eWall.querySelectorAll('a-box').forEach(b => b.setAttribute('width', d + 2));
                     }
 
-                    // 플레이어 이동 경계 업데이트
                     window._mapBounds = { minX: x0, maxX: x1, minZ: z0, maxZ: z1 };
                 });
             }
@@ -557,8 +142,6 @@
         AFRAME.registerComponent('double-click-fly', {
             init: function () {
                 this._onDblClick = () => {
-                    if (quizOpen) return;
-
                     isFlying = !isFlying;
                     const hud = document.getElementById('hud');
 
@@ -583,10 +166,9 @@
                 this.defaultGroundY = 1.6;
                 this.vy             = 0;
                 this.grounded       = true;
-                this.inEventZone    = {};
 
                 this._jump = (e) => {
-                    if (e.code === 'Space' && this.grounded && !quizOpen && !dialogueOpen && !isFlying) {
+                    if (e.code === 'Space' && this.grounded && !isFlying) {
                         this.vy = 8;
                         this.grounded = false;
                     }
@@ -629,15 +211,7 @@
                         const overlapX = pos.x + R > b.minX && pos.x - R < b.maxX;
                         const overlapZ = pos.z + R > b.minZ && pos.z - R < b.maxZ;
 
-                        if (!overlapX || !overlapZ) {
-                            if (b.eventNpc) this.inEventZone[b.eventNpc] = false;
-                            continue;
-                        }
-
-                        if (b.eventNpc && !this.inEventZone[b.eventNpc]) {
-                            this.inEventZone[b.eventNpc] = true;
-                            showDialogue(b.eventNpc, b.quizIndex);
-                        }
+                        if (!overlapX || !overlapZ) continue;
 
                         const toLeft  = pos.x - (b.minX - R);
                         const toRight = (b.maxX + R) - pos.x;
@@ -674,32 +248,6 @@
 </head>
 <body>
 
-    <div id="score-display">점수: <span id="score-value">0</span></div>
-    <div id="score-popup"></div>
-
-    <div id="dialogue-overlay">
-        <div id="dialogue-box">
-            <div id="dialogue-speaker"></div>
-            <div id="dialogue-text"></div>
-            <button id="dialogue-next" onclick="advanceDialogue()">다음 ▶</button>
-        </div>
-    </div>
-
-    <div id="quiz-overlay">
-        <div id="quiz-box">
-            <div id="quiz-title"></div>
-            <div id="quiz-question"></div>
-            <div id="quiz-options">
-                <button class="quiz-opt"></button>
-                <button class="quiz-opt"></button>
-                <button class="quiz-opt"></button>
-                <button class="quiz-opt"></button>
-            </div>
-            <div id="quiz-feedback"></div>
-            <button id="quiz-close" onclick="closeQuiz()">계속 탐방하기</button>
-        </div>
-    </div>
-
     <a-scene
         renderer="antialias: true;
                   colorManagement: true;
@@ -719,12 +267,12 @@
         <a-light type="directional" color="#fffaf0" intensity="0.5" position="-1 4 2"></a-light>
 
         <a-assets timeout="60000">
-            <a-asset-item id="model-jongmyo" src="map_file/jongmyo.glb"></a-asset-item>
+            <a-asset-item id="model-jongmyo" src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/jongmyo.glb"></a-asset-item>
         </a-assets>
 
-        <!-- 종묘 건물: 돌바닥(앞 절반 — 올라설 수 있음) + 건물 벽(뒤 절반 — 퀴즈 트리거) -->
+        <!-- 종묘 건물: 돌바닥(앞 절반 — 올라설 수 있음) + 건물 벽(뒤 절반) -->
         <a-entity
-            building-solid="split: true; eventNpc: jongmyo_npc; quizIndex: 0"
+            building-solid="split: true"
             gltf-model="#model-jongmyo"
             position="0 -0.5 -80"
             scale="0.5 0.5 0.5">
