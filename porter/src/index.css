@@ -1,10 +1,26 @@
 :root {
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
   color-scheme: light;
+
+  --bg:        #F9F7F2;
+  --bg-alt:    #EBEBE4;
+  --celadon:   #E8F0E9;
+  --text:      #2C2C2C;
+  --text-muted:#6B6560;
+  --accent:    #A4343A;
+  --gold:      #C5A059;
+  --nav-bg:    #1C1C1A;
+  --card-bg:   #FFFFFF;
+  --border:    #D8D4CC;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #fff8ec 0%, #fbe9d0 100%);
-  color: #3a2415;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }
+
+a { text-decoration: none; color: inherit; }

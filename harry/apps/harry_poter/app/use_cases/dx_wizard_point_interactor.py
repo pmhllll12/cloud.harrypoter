@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import logging
 from pathlib import Path
 
 import matplotlib
@@ -10,7 +11,7 @@ import seaborn as sns
 from pandas import DataFrame, factorize
 
 from harry_poter.adapter.inbound.api.schemas.dx_wizard_point_schemas import WizardPointSchema
-from harry_poter.app.dtos.dx_wizard_point_dto import WizardPointQuery, WizardPointResponse
+from harry_poter.app.dtos.dx_wizard_point_dto import UserPointQuery, UserPointResponse, WizardPointQuery, WizardPointResponse
 from harry_poter.app.ports.input.dx_wizard_point_use_case import WizardPointUseCase
 from harry_poter.app.ports.output.dx_wizard_point_port import WizardPointPort
 
@@ -27,9 +28,21 @@ _VO_COLUMN_LABELS = {
 _VO_FEATURE_COLUMNS = ["Survived", "School", "Gender", "Galleons", "Tower", "WandCore"]
 
 
+logger = logging.getLogger(__name__)
+
+
 class WizardPointInteractor(WizardPointUseCase):
     def __init__(self, repository: WizardPointPort) -> None:
         self.repository = repository
+
+    async def point_save(self, user_id: int, amount: int = 10) -> UserPointResponse:
+        query = UserPointQuery(user_id=user_id, amount=amount)
+        result = await self.repository.save_point(query)
+        logger.info(
+            "[WizardPointInteractor/point_save] user_id=%s earned=%s total=%s",
+            user_id, amount, result.total_points,
+        )
+        return result
 
     async def introduce_myself(self, schema: WizardPointSchema) -> WizardPointResponse:
         query = WizardPointQuery(id=schema.id, name=schema.name)

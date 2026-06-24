@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import pandas as pd
 
@@ -23,4 +24,9 @@ class HogwartsHeritageUseCase(ABC):
     @abstractmethod
     def introduce_myself(self, schema: HogwartsHeritageSchema) -> HogwartsHeritageResponse:
         '''호그와트 헤리티지의 자기소개 메소드'''
+        pass
+
+    @abstractmethod
+    def get_map_page(self, page: str = "index") -> Path:
+        '''문묘/성균관 VR 맵 HTML 파일 경로를 반환하는 메소드'''
         pass

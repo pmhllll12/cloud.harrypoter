@@ -1,8 +1,17 @@
 from __future__ import annotations
 
-# SphinxQuizOrm은 __abstract__ (설계 보류) 이고 엔티티가 아직 정의되지 않았습니다.
-# 도메인 모델·테이블 스키마가 확정되면 구현하세요.
+from harry_poter.adapter.outbound.orm.dx_sphinx_quiz_orm import HeritageQuizOrm
+from harry_poter.app.dtos.dx_sphinx_quiz_dto import HeritageQuizItem
 
 
-class SphinxQuizMapper:
-    pass
+def heritage_quiz_item_from_orm(orm: HeritageQuizOrm) -> HeritageQuizItem:
+    return HeritageQuizItem(
+        id=orm.id,
+        heritage_name=orm.heritage_name,
+        question=orm.question,
+        answer=orm.answer,
+        choices=tuple(orm.choices),
+    )
+
+
+__all__ = ["heritage_quiz_item_from_orm"]
