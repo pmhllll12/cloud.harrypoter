@@ -1,0 +1,103 @@
+.tourinfo-page {
+  min-height: 100dvh;
+  background: #fff;
+  color: #2C2C2C;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+/* Navbar */
+.ti-nav {
+  position: sticky; top: 0; z-index: 20;
+  height: 56px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 48px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #D8D4CC;
+}
+.ti-nav-left { display: flex; align-items: center; gap: 28px; }
+.ti-nav-brand { display: flex; align-items: center; gap: 0; cursor: pointer; }
+.ti-nav-links { display: flex; gap: 24px; }
+.ti-nav-links a { font-size: 13px; color: #6B6560; text-decoration: none; cursor: pointer; transition: color 0.2s; }
+.ti-nav-links a:hover, .ti-nav-links a.active { color: #2C2C2C; font-weight: 600; }
+.ti-nav-setting { padding: 6px 16px; border-radius: 20px; border: 1px solid #D8D4CC; font-size: 13px; color: #2C2C2C; cursor: pointer; transition: border-color 0.2s; }
+.ti-nav-setting:hover { border-color: #2C2C2C; }
+
+/* Hero */
+.ti-hero { position: relative; height: 400px; overflow: hidden; }
+.ti-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; filter: brightness(0.5) saturate(0.7); }
+.ti-hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 64px; gap: 12px;
+}
+.ti-hero-tag {
+  display: inline-block; padding: 4px 14px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.5); font-size: 12px;
+  color: rgba(255,255,255,0.85); width: fit-content; letter-spacing: 0.05em;
+}
+.ti-hero-overlay h1 {
+  margin: 0; font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: #fff; letter-spacing: -0.025em; line-height: 1.2;
+}
+.ti-hero-overlay p { margin: 0; font-size: 15px; color: rgba(255,255,255,0.78); max-width: 500px; line-height: 1.65; }
+
+/* Filter */
+.ti-filter {
+  display: flex; gap: 10px; padding: 28px 64px 0;
+}
+.ti-filter-btn {
+  padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  border: 1px solid #D8D4CC; background: #fff; color: #6B6560; cursor: pointer; transition: all 0.2s;
+}
+.ti-filter-btn:hover { border-color: #2C2C2C; color: #2C2C2C; }
+.ti-filter-btn.active { background: #2C2C2C; color: #fff; border-color: #2C2C2C; }
+
+/* Spots */
+.ti-spots { padding: 28px 64px 56px; }
+.ti-spots-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 24px; }
+.ti-spots-header h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.ti-spots-count { font-size: 13px; color: #6B6560; }
+
+.ti-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.ti-card { border-radius: 14px; overflow: hidden; border: 1px solid #EBEBEB; transition: box-shadow 0.2s, transform 0.2s; cursor: pointer; }
+.ti-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.10); transform: translateY(-2px); }
+
+.ti-card-img { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+.ti-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.ti-card:hover .ti-card-img img { transform: scale(1.04); }
+.ti-card-category {
+  position: absolute; top: 12px; left: 12px;
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,0.9); color: #2C2C2C;
+}
+
+.ti-card-body { padding: 18px 20px 20px; }
+.ti-card-region { font-size: 12px; color: #C5A059; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 4px; }
+.ti-card-name { margin: 0 0 8px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.ti-card-desc { margin: 0 0 16px; font-size: 13px; color: #6B6560; line-height: 1.65; }
+.ti-card-btn {
+  padding: 8px 18px; border-radius: 8px; border: 1px solid #D8D4CC;
+  background: #fff; font-size: 12px; font-weight: 600; color: #2C2C2C;
+  cursor: pointer; transition: all 0.2s;
+}
+.ti-card-btn:hover { background: #2C2C2C; color: #fff; border-color: #2C2C2C; }
+
+/* AI Banner */
+.ti-ai-banner {
+  background: #1A1A1A; padding: 64px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ti-ai-content { text-align: center; max-width: 560px; }
+.ti-ai-content h2 { margin: 0 0 12px; font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.025em; }
+.ti-ai-content p { margin: 0 0 28px; font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.7; }
+.ti-ai-btn {
+  padding: 13px 32px; border-radius: 10px; border: none;
+  background: #D4BC8E; color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+}
+.ti-ai-btn:hover { background: #C4AA7A; }

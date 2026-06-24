@@ -121,8 +121,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 60%;   /* 건물 전체 노출, 줌 아웃 */
+  object-position: center 60%;
   filter: brightness(1.15) contrast(0.80) saturate(0.48) sepia(0.06);
+  transform: scale(1);
+  transform-origin: center 60%;
+  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 인트로 중: 사진 줌인 */
+.landing--intro .palace-img {
+  transform: scale(1.45);
+}
+
+/* 인트로 중: 글자/navbar 숨기기 */
+.landing--intro .landing-text,
+.landing--intro .navbar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.landing-text,
+.navbar {
+  transition: opacity 0.8s ease 0.3s;
 }
 
 /* 그라디언트 오버레이: 15%p 씩 줄임 */
