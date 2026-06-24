@@ -1,6 +1,6 @@
 import "./StorePage.css";
 
-type Page = "landing" | "map" | "store";
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
 type Props = { onNavigate: (page: Page) => void };
 
 const PRODUCTS = [
@@ -35,11 +35,10 @@ export default function StorePage({ onNavigate }: Props) {
             <span className="nav-brand-name">dapter4</span>
           </div>
           <div className="store-nav-links">
-            <a>관광정보</a>
-            <a>관광동선</a>
-            <a onClick={() => onNavigate("map")}>지도</a>
+            <a onClick={() => onNavigate("tourinfo")}>관광정보</a>
+            <a onClick={() => onNavigate("map")}>관광동선</a>
             <a className="active">스토어</a>
-            <a>티켓</a>
+            <a onClick={() => onNavigate("ticket")}>티켓</a>
           </div>
         </div>
         <div className="store-nav-setting">설정</div>

@@ -1,6 +1,6 @@
 import "./MapPage.css";
 
-type Page = "landing" | "map" | "store";
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
 type Props = { onNavigate: (page: Page) => void };
 
 const SPOTS = [
@@ -47,11 +47,10 @@ export default function MapPage({ onNavigate }: Props) {
             <span className="nav-brand-name">dapter4</span>
           </div>
           <div className="map-nav-links">
-            <a>관광정보</a>
-            <a>관광동선</a>
-            <a className="active">지도</a>
+            <a onClick={() => onNavigate("tourinfo")}>관광정보</a>
+            <a className="active">관광동선</a>
             <a onClick={() => onNavigate("store")}>스토어</a>
-            <a>티켓</a>
+            <a onClick={() => onNavigate("ticket")}>티켓</a>
           </div>
         </div>
         <div className="map-nav-right">
