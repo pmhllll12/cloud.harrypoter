@@ -1,0 +1,21 @@
+.splash-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.splash-overlay--out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-lottie-player {
+  width: 140vw;
+  height: 140vh;
+}
