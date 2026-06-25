@@ -8,43 +8,43 @@ const SPOTS = [
     name: "속리산 국립공원",
     region: "충북 보은",
     category: "자연",
-    desc: "해발 1,058m의 장엄한 봉우리와 울창한 원시림. 법주사, 세조길 등 자연과 역사가 공존하는 충북 대표 명소.",
-    img: "https://images.unsplash.com/photo-1542223616-9de9adb5e3e8?w=600&q=80&fit=crop",
+    desc: "해발 1,058m의 장엄한 봉우리와 울창한 원시림. 법주사, 세조길 등 자연과 역사가 공존하는 대표 명소.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Songnisan.jpg",
   },
   {
-    name: "단양 도담삼봉",
-    region: "충북 단양",
-    category: "자연",
-    desc: "남한강 한가운데 솟아오른 세 개의 봉우리. 조선 시대부터 단양팔경의 으뜸으로 꼽히는 절경.",
-    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80&fit=crop",
-  },
-  {
-    name: "법주사",
-    region: "충북 보은",
+    name: "성균관 문묘",
+    region: "서울 종로",
     category: "역사문화",
-    desc: "553년 창건된 천년 고찰. 국보 팔상전과 33m 청동 미륵대불이 있는 유네스코 세계유산.",
-    img: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=600&q=80&fit=crop",
+    desc: "고려 말 창건된 조선 최고의 유교 교육 기관. 공자를 모신 대성전과 명륜당이 600년 역사를 간직하고 있는 유네스코 세계유산.",
+    img: "https://images.unsplash.com/photo-1575034176396-66241b37d3d2?w=800&h=600&fit=crop&crop=center&q=80",
   },
   {
-    name: "청주 고인쇄박물관",
-    region: "충북 청주",
+    name: "경복궁",
+    region: "서울 종로",
     category: "역사문화",
-    desc: "세계 최초 금속활자본 직지심체요절의 고향. 금속활자 인쇄술의 역사를 직접 체험할 수 있는 박물관.",
-    img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80&fit=crop",
+    desc: "조선 왕조의 정궁. 근정전, 경회루 등 웅장한 전각들이 북악산을 배경으로 펼쳐지는 한국 대표 궁궐.",
+    img: "https://images.unsplash.com/photo-1638964663550-e2123ac8900b?w=900&h=500&fit=crop&crop=center&q=80",
   },
   {
-    name: "괴산 산막이옛길",
-    region: "충북 괴산",
+    name: "해운대 해수욕장",
+    region: "부산 해운대",
     category: "자연",
-    desc: "괴산호수를 따라 이어지는 4km 호반 산책로. 기암절벽과 맑은 호수가 빚어내는 사계절 풍경.",
-    img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80&fit=crop",
+    desc: "국내 최대 규모의 해수욕장. 에메랄드빛 바다와 도심 스카이라인이 어우러지는 부산의 상징.",
+    img: "https://images.unsplash.com/photo-1700277842839-2ef54f815f47?w=800&h=450&fit=crop&crop=center&q=80",
   },
   {
-    name: "수안보 온천",
-    region: "충북 충주",
+    name: "불국사",
+    region: "경북 경주",
+    category: "역사문화",
+    desc: "신라 불교 예술의 정수. 다보탑·석가탑을 품은 유네스코 세계유산으로 천년 고도 경주의 대표 사찰.",
+    img: "https://images.unsplash.com/photo-1684134549350-be5fd0d8feaa?w=600&q=80&fit=crop",
+  },
+  {
+    name: "경포대 해변",
+    region: "강원 강릉",
     category: "힐링",
-    desc: "우리나라 최초의 자연 용출 온천. 53°C의 알칼리성 온천수가 피로를 녹여주는 힐링 명소.",
-    img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&fit=crop",
+    desc: "동해안 최대 석호 경포호와 맞닿은 백사장. 솔숲 너머로 펼쳐지는 일출이 일품인 힐링 명소.",
+    img: "https://images.unsplash.com/photo-1542086094-a61c1ab7c4b8?w=800&h=450&fit=crop&crop=center&q=80",
   },
 ];
 
@@ -73,12 +73,12 @@ export default function TourInfoPage({ onNavigate }: Props) {
       <section className="ti-hero">
         <img
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80&fit=crop"
-          alt="충북 관광"
+          alt="한국 관광"
         />
         <div className="ti-hero-overlay">
-          <span className="ti-hero-tag">충청북도 관광정보</span>
-          <h1>자연과 역사가 숨쉬는<br />충청북도</h1>
-          <p>청주부터 단양까지, 충북의 숨겨진 보석 같은 명소를 AI와 함께 탐험하세요</p>
+          <span className="ti-hero-tag">관광정보</span>
+          <h1>자연과 역사가 숨쉬는<br />대한민국</h1>
+          <p>서울부터 제주까지, 전국의 숨겨진 보석 같은 명소를 AI와 함께 탐험하세요</p>
         </div>
       </section>
 
@@ -92,7 +92,7 @@ export default function TourInfoPage({ onNavigate }: Props) {
       {/* Spots Grid */}
       <section className="ti-spots">
         <div className="ti-spots-header">
-          <h2>충북 추천 명소</h2>
+          <h2>지역 추천 명소</h2>
           <span className="ti-spots-count">{SPOTS.length}곳</span>
         </div>
         <div className="ti-grid">

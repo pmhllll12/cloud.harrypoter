@@ -46,10 +46,10 @@ export default function StorePage({ onNavigate }: Props) {
 
       {/* Hero */}
       <section className="store-hero">
-        <img src="/store-hero.jpg" alt="충북 스토어" />
+        <img src="/store-hero.jpg" alt="스토어" />
         <div className="store-hero-overlay">
-          <h1>충북 스토어</h1>
-          <p>충북의 특별한 경험을 담은 상품과 투어 티켓을 만나보세요</p>
+          <h1>스토어</h1>
+          <p>전국의 특별한 경험을 담은 상품과 투어 티켓을 만나보세요</p>
           <a href="#products" className="store-hero-btn">상품 보기</a>
         </div>
       </section>
@@ -57,7 +57,7 @@ export default function StorePage({ onNavigate }: Props) {
       {/* Products */}
       <section className="store-products" id="products">
         <div className="store-section-header">
-          <h2>Chungbuk Store</h2>
+          <h2>Korea Store</h2>
           <div className="store-arrows">
             <button className="store-arrow-btn">←</button>
             <button className="store-arrow-btn">→</button>
@@ -81,11 +81,11 @@ export default function StorePage({ onNavigate }: Props) {
           <img src="/store-featured.jpg" alt="속리산 트레킹" />
         </div>
         <div className="store-featured-content">
-          <span className="featured-tag">충북 대표 상품</span>
+          <span className="featured-tag">대표 상품</span>
           <h2>속리산에서 만나는<br />최고의 트레킹 경험</h2>
           <p>
             천년의 역사를 품은 법주사와 웅장한 속리산 국립공원을 전문 가이드와 함께 탐험해보세요.
-            해발 1,058m의 장엄한 봉우리와 울창한 원시림이 만들어내는 절경은 충북 최고의 자연 명소입니다.
+            해발 1,058m의 장엄한 봉우리와 울창한 원시림이 만들어내는 절경은 대한민국 최고의 자연 명소입니다.
           </p>
           <p>
             당일 코스부터 1박 2일 심화 트레킹까지 다양한 프로그램으로 운영됩니다.

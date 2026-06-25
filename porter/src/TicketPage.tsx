@@ -97,12 +97,12 @@ export default function TicketPage({ onNavigate }: Props) {
       <section className="tk-hero">
         <img
           src="https://images.unsplash.com/photo-1601024445121-e5b82f020549?w=1400&q=80&fit=crop"
-          alt="충북 티켓"
+          alt="체험 티켓"
         />
         <div className="tk-hero-overlay">
-          <span className="tk-hero-tag">충북 체험 티켓</span>
-          <h1>충북의 특별한 순간을<br />예약하세요</h1>
-          <p>패러글라이딩부터 문화유산 투어까지, 잊지 못할 충북 경험을 지금 바로 시작하세요</p>
+          <span className="tk-hero-tag">체험 티켓</span>
+          <h1>대한민국의 특별한 순간을<br />예약하세요</h1>
+          <p>패러글라이딩부터 문화유산 투어까지, 잊지 못할 전국 여행 경험을 지금 바로 시작하세요</p>
         </div>
       </section>
 
@@ -157,7 +157,7 @@ export default function TicketPage({ onNavigate }: Props) {
       {/* CTA Banner */}
       <section className="tk-cta">
         <h2>AI에게 맞춤 코스를 추천받으세요</h2>
-        <p>여행 날짜, 인원, 관심사를 알려주시면 AI가 최적의 충북 여행 코스를 만들어드립니다.</p>
+        <p>여행 날짜, 인원, 관심사를 알려주시면 AI가 최적의 전국 여행 코스를 만들어드립니다.</p>
         <button className="tk-cta-btn">AI와 대화하기</button>
       </section>
     </div>

@@ -7,28 +7,28 @@ const SPOTS = [
   {
     tag: "추천" as const,
     title: "속리산 국립공원",
-    region: "충북 보은",
+    region: "보은",
     guide: "AI 관광 가이드",
     progress: 92,
   },
   {
     tag: "추천" as const,
     title: "법주사",
-    region: "충북 보은",
+    region: "보은",
     guide: "AI 관광 가이드",
     progress: 85,
   },
   {
     tag: "진행 중" as const,
     title: "단양 패러글라이딩",
-    region: "충북 단양",
+    region: "단양",
     guide: "AI 관광 가이드",
     progress: 60,
   },
   {
     tag: "진행 중" as const,
     title: "청주 고인쇄박물관",
-    region: "충북 청주",
+    region: "청주",
     guide: "AI 관광 가이드",
     progress: 74,
   },
@@ -60,7 +60,7 @@ export default function MapPage({ onNavigate }: Props) {
 
       {/* Hero */}
       <div className="map-hero">
-        <img src="/palace.jpg" alt="충북 관광" />
+        <img src="/palace.jpg" alt="한국 관광" />
       </div>
 
       {/* Body */}
@@ -108,7 +108,7 @@ export default function MapPage({ onNavigate }: Props) {
           </div>
           <div className="map-container">
             <iframe
-              title="충북 지도"
+              title="한국 지도"
               src="https://www.openstreetmap.org/export/embed.html?bbox=127.0%2C36.3%2C128.6%2C37.3&layer=mapnik&marker=36.6424%2C127.4890"
             />
           </div>
