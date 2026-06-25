@@ -1,7 +1,8 @@
 import "./TourInfoPage.css";
+import type { Spot } from "./SpotDetailPage";
 
-type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
-type Props = { onNavigate: (page: Page) => void };
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
+type Props = { onNavigate: (page: Page) => void; onViewSpot: (spot: Spot) => void };
 
 const SPOTS = [
   {
@@ -50,7 +51,7 @@ const SPOTS = [
 
 const CATEGORIES = ["전체", "자연", "역사문화", "힐링"];
 
-export default function TourInfoPage({ onNavigate }: Props) {
+export default function TourInfoPage({ onNavigate, onViewSpot }: Props) {
   return (
     <div className="tourinfo-page">
       <nav className="ti-nav">
@@ -98,6 +99,13 @@ export default function TourInfoPage({ onNavigate }: Props) {
         <div className="ti-grid">
           {SPOTS.map((s) => (
             <div className="ti-card" key={s.name}>
+              {s.name === "법주사" && (
+                <div className="ti-event-badge">
+                  <span className="ti-event-badge-label">· EVENT ·</span>
+                  <span className="ti-event-badge-pct">50%</span>
+                  <span className="ti-event-badge-off">OFF</span>
+                </div>
+              )}
               <div className="ti-card-img">
                 <img src={s.img} alt={s.name} />
                 <span className="ti-card-category">{s.category}</span>
@@ -106,7 +114,7 @@ export default function TourInfoPage({ onNavigate }: Props) {
                 <div className="ti-card-region">{s.region}</div>
                 <h3 className="ti-card-name">{s.name}</h3>
                 <p className="ti-card-desc">{s.desc}</p>
-                <button className="ti-card-btn">AI 가이드 보기</button>
+                <button className="ti-card-btn" onClick={() => onViewSpot(s)}>AI 가이드 보기</button>
               </div>
             </div>
           ))}

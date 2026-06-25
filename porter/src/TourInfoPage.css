@@ -64,10 +64,54 @@
   gap: 28px;
 }
 
-.ti-card { border-radius: 14px; overflow: hidden; border: 1px solid #EBEBEB; transition: box-shadow 0.2s, transform 0.2s; cursor: pointer; }
+.ti-card { position: relative; border-radius: 20px; border: 1px solid #EBEBEB; transition: box-shadow 0.2s, transform 0.2s; cursor: pointer; background: #fff; }
 .ti-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.10); transform: translateY(-2px); }
 
-.ti-card-img { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+/* 이벤트 배지 */
+.ti-event-badge {
+  position: absolute;
+  top: -18px;
+  left: -6px;
+  z-index: 10;
+  background: #7D1F1F;
+  color: #F5EDD8;
+  padding: 10px 11px 8px;
+  border-radius: 8px;
+  transform: rotate(-13deg);
+  transform-origin: center center;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+  box-shadow: 2px 4px 14px rgba(0,0,0,0.35);
+  min-width: 64px;
+  line-height: 1;
+}
+.ti-event-badge-label {
+  display: inline-block;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  border: 1px solid rgba(245,237,216,0.55);
+  border-radius: 20px;
+  padding: 2px 7px;
+  margin-bottom: 5px;
+  font-style: normal;
+  font-family: "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+.ti-event-badge-pct {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: block;
+  margin-bottom: 1px;
+}
+.ti-event-badge-off {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  display: block;
+  font-family: "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.ti-card-img { position: relative; aspect-ratio: 16/10; overflow: hidden; border-radius: 20px 20px 0 0; }
 .ti-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
 .ti-card:hover .ti-card-img img { transform: scale(1.04); }
 .ti-card-category {
