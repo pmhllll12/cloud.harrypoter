@@ -10,7 +10,7 @@ type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
 
 export default function App() {
   const [page, setPage] = useState<Page>("landing");
-  const [introPlaying, setIntroPlaying] = useState(true);
+  const [introPlaying, setIntroPlaying] = useState(false);
 
   if (page === "map") return <MapPage onNavigate={setPage} />;
   if (page === "store") return <StorePage onNavigate={setPage} />;
@@ -28,7 +28,6 @@ export default function App() {
             <span className="nav-brand-name">dapter4</span>
           </div>
           <div className="nav-links">
-            <a onClick={() => setPage("tourinfo")} style={{ cursor: "pointer" }}>관광정보</a>
             <a onClick={() => setPage("map")} style={{ cursor: "pointer" }}>관광동선</a>
             <a onClick={() => setPage("store")} style={{ cursor: "pointer" }}>스토어</a>
             <a onClick={() => setPage("ticket")} style={{ cursor: "pointer" }}>티켓</a>
@@ -44,11 +43,11 @@ export default function App() {
 
       <div className="landing-text">
         <h1 className="landing-title">
-          충북 관광을<br />
+          대한민국 구석구석을<br />
           AI와 함께 탐험하세요
         </h1>
         <p className="landing-sub">
-          청주부터 단양까지, AI가 충북의 자연과 문화유산을 생생하게 안내합니다
+          서울부터 제주까지, AI가 전국의 자연과 문화유산을 생생하게 안내합니다
         </p>
         <a href="#" className="landing-cta">AI와 대화하기</a>
       </div>
