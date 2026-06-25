@@ -1,7 +1,8 @@
 import "./TicketPage.css";
+import type { Ticket } from "./BookingPage";
 
-type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
-type Props = { onNavigate: (page: Page) => void };
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking";
+type Props = { onNavigate: (page: Page) => void; onBook: (ticket: Ticket) => void };
 
 const TICKETS = [
   {
@@ -74,7 +75,7 @@ const TICKETS = [
 
 const CATEGORIES = ["전체", "액티비티", "자연탐방", "문화유산", "음식체험"];
 
-export default function TicketPage({ onNavigate }: Props) {
+export default function TicketPage({ onNavigate, onBook }: Props) {
   return (
     <div className="ticket-page">
       <nav className="tk-nav">
@@ -146,7 +147,7 @@ export default function TicketPage({ onNavigate }: Props) {
                     <span className="tk-price-num">{t.price.toLocaleString()}</span>
                     <span className="tk-price-unit">원~</span>
                   </div>
-                  <button className="tk-book-btn">예약하기</button>
+                  <button className="tk-book-btn" onClick={() => onBook(t)}>예약하기</button>
                 </div>
               </div>
             </div>

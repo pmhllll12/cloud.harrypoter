@@ -1,7 +1,10 @@
+import { useState, useRef, useEffect } from "react";
 import "./MapPage.css";
 
-type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
 type Props = { onNavigate: (page: Page) => void };
+
+type Message = { role: "user" | "ai"; text: string };
 
 const SPOTS = [
   {
@@ -34,7 +37,51 @@ const SPOTS = [
   },
 ];
 
+const AI_RESPONSES: Record<string, string> = {
+  default: "안녕하세요! 충북 관광 AI 가이드입니다. 여행 계획, 관광지 추천, 맛집 정보 등 무엇이든 물어보세요!",
+};
+
+function getAIResponse(input: string): string {
+  if (input.includes("속리산") || input.includes("국립공원")) {
+    return "속리산 국립공원은 충북 보은에 위치한 아름다운 명산입니다. 법주사, 세조길, 문장대 등 볼거리가 많아요. 봄 철쭉과 가을 단풍이 특히 아름답습니다!";
+  }
+  if (input.includes("법주사")) {
+    return "법주사는 신라 시대에 창건된 유서 깊은 사찰입니다. 국보인 쌍사자석등과 팔상전이 있으며, 속리산 국립공원 내에 위치해 있어 함께 방문하기 좋습니다.";
+  }
+  if (input.includes("맛집") || input.includes("음식")) {
+    return "충북의 대표 음식으로는 청주 순대국밥, 단양 마늘요리, 보은 대추 관련 음식이 있습니다. 지역 특산물을 활용한 맛집이 많으니 꼭 방문해 보세요!";
+  }
+  if (input.includes("추천") || input.includes("어디")) {
+    return "충북 여행지로는 속리산 국립공원, 단양 8경, 청주 고인쇄박물관, 청남대를 추천드립니다. 계절에 따라 다양한 매력을 즐길 수 있어요!";
+  }
+  return "좋은 질문이에요! 충북에는 아름다운 자연과 역사 문화 명소가 가득합니다. 더 구체적인 장소나 활동에 대해 알고 싶으시면 말씀해 주세요.";
+}
+
 export default function MapPage({ onNavigate }: Props) {
+  const [aiMode, setAiMode] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "ai", text: AI_RESPONSES.default },
+  ]);
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    const userMsg: Message = { role: "user", text: trimmed };
+    const aiMsg: Message = { role: "ai", text: getAIResponse(trimmed) };
+    setMessages((prev) => [...prev, userMsg, aiMsg]);
+    setInput("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") sendMessage();
+  };
+
   return (
     <div className="map-page">
       {/* Navbar */}
@@ -99,19 +146,53 @@ export default function MapPage({ onNavigate }: Props) {
           </div>
         </div>
 
-        {/* Center: search + map */}
+        {/* Center: map with overlaid AI chat */}
         <div className="map-center">
-          <div className="map-search-row">
-            <span className="map-search-label">관광지 검색</span>
-            <input className="map-search-input" placeholder="검색..." />
-            <button className="map-filter-btn">필터</button>
-          </div>
-          <div className="map-container">
-            <iframe
-              title="충북 지도"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=127.0%2C36.3%2C128.6%2C37.3&layer=mapnik&marker=36.6424%2C127.4890"
-            />
-          </div>
+          {aiMode ? (
+            <div className="ai-chat-panel">
+              <div className="ai-chat-character">
+                <img src="/ai-character-male.png" alt="AI 가이드" />
+              </div>
+              <div className="ai-chat-area">
+                <div className="ai-chat-messages">
+                  {messages.map((msg, i) => (
+                    <div key={i} className={`ai-msg ai-msg--${msg.role}`}>
+                      {msg.role === "ai" && (
+                        <div className="ai-msg-avatar">AI</div>
+                      )}
+                      <div className="ai-msg-bubble">{msg.text}</div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                <div className="ai-chat-input-row">
+                  <input
+                    className="ai-chat-input"
+                    placeholder="관광지, 맛집, 일정 등 무엇이든 물어보세요..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <button className="ai-chat-send" onClick={sendMessage}>
+                    전송
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="map-container">
+              <button
+                className="map-ai-btn"
+                onClick={() => setAiMode(true)}
+              >
+                AI 검색
+              </button>
+              <iframe
+                title="충북 지도"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=127.0%2C36.3%2C128.6%2C37.3&layer=mapnik&marker=36.6424%2C127.4890"
+              />
+            </div>
+          )}
         </div>
 
         {/* Right: spot cards */}

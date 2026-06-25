@@ -1,6 +1,6 @@
 import "./StorePage.css";
 
-type Page = "landing" | "map" | "store" | "tourinfo" | "ticket";
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
 type Props = { onNavigate: (page: Page) => void };
 
 const PRODUCTS = [
