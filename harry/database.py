@@ -47,10 +47,11 @@ async def create_all_tables() -> None:
     from matrix.grid_neo_theone_base import Base
     from harry_poter.adapter.outbound.orm import po_harry_user_orm  # noqa: F401
     from harry_poter.adapter.outbound.orm import sm_dumbledore_store_orm  # noqa: F401
+    from harry_poter.adapter.outbound.orm import ticket_booking_orm  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    logger.info("DB create_all 완료 (champions, tournament_entries)")
+    logger.info("DB create_all 완료 (champions, tournament_entries, ticket_bookings, dummy_user_points)")
 
 
 async def dispose_engine() -> None:

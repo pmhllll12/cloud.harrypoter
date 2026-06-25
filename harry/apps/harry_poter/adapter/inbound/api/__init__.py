@@ -4,15 +4,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from harry_poter.adapter.inbound.v1.ax_hermione_route_router import hermione_route_router
-from harry_poter.adapter.inbound.v1.ax_hogwarts_hertage_router import hogwarts_hertage_router
-from harry_poter.adapter.inbound.v1.ax_lovegood_course_router import lovegood_course_router
-from harry_poter.adapter.inbound.v1.dx_sphinx_quiz_router import sphinx_quiz_router
-from harry_poter.adapter.inbound.v1.dx_wizard_point_router import wizard_point_router
-from harry_poter.adapter.inbound.v1.po_harry_user_router import harry_user_router
-from harry_poter.adapter.inbound.v1.po_professor_festival_router import professor_festival_router
-from harry_poter.adapter.inbound.v1.sm_dumbledore_store_router import dumbledore_store_router
-from harry_poter.adapter.inbound.v1.sm_weasley_booking_router import weasley_booking_router
+from harry_poter.adapter.inbound.api.v1.ax_hermione_route_router import hermione_route_router
+from harry_poter.adapter.inbound.api.v1.ax_hogwarts_hertage_router import hogwarts_hertage_router
+from harry_poter.adapter.inbound.api.v1.ax_lovegood_course_router import lovegood_course_router
+from harry_poter.adapter.inbound.api.v1.dx_sphinx_quiz_router import sphinx_quiz_router
+from harry_poter.adapter.inbound.api.v1.dx_wizard_point_router import wizard_point_router
+from harry_poter.adapter.inbound.api.v1.po_harry_user_router import harry_user_router
+from harry_poter.adapter.inbound.api.v1.po_professor_festival_router import professor_festival_router
+from harry_poter.adapter.inbound.api.v1.sm_dumbledore_store_router import dumbledore_store_router
+from harry_poter.adapter.inbound.api.v1.sm_weasley_booking_router import weasley_booking_router
+from harry_poter.adapter.inbound.api.v1.ticket_booking_router import ticket_booking_router
 
 harry_poter_router = APIRouter(prefix="/harry-poter", tags=["harry-poter"])
 
@@ -35,11 +36,16 @@ async def harry_poter_root() -> dict[str, str]:
             "weasley_upload": "/harry-poter/weasley/upload",
             "professor_myself": "/harry-poter/professor/myself",
             "professor_chat": "/harry-poter/professor/chat",
+            "ticket_book": "/harry-poter/tickets/book",
+            "ticket_my_list": "/harry-poter/tickets/users/{user_id}",
+            "ticket_detail": "/harry-poter/tickets/{ticket_id}",
+            "ticket_use": "/harry-poter/tickets/{ticket_id}/use",
         },
     }
 
 
 harry_poter_router.include_router(weasley_booking_router)
+harry_poter_router.include_router(ticket_booking_router)
 harry_poter_router.include_router(dumbledore_store_router)
 harry_poter_router.include_router(hogwarts_hertage_router)
 harry_poter_router.include_router(hermione_route_router)

@@ -1,0 +1,120 @@
+.ticket-page {
+  min-height: 100dvh;
+  background: #F9F7F2;
+  color: #2C2C2C;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+/* Navbar */
+.tk-nav {
+  position: sticky; top: 0; z-index: 20;
+  height: 56px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 48px;
+  background: rgba(249,247,242,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #D8D4CC;
+}
+.tk-nav-left { display: flex; align-items: center; gap: 28px; }
+.tk-nav-brand { display: flex; align-items: center; gap: 0; cursor: pointer; }
+.tk-nav-links { display: flex; gap: 24px; }
+.tk-nav-links a { font-size: 13px; color: #6B6560; text-decoration: none; cursor: pointer; transition: color 0.2s; }
+.tk-nav-links a:hover, .tk-nav-links a.active { color: #2C2C2C; font-weight: 600; }
+.tk-nav-setting { padding: 6px 16px; border-radius: 20px; border: 1px solid #D8D4CC; font-size: 13px; color: #2C2C2C; cursor: pointer; transition: border-color 0.2s; }
+.tk-nav-setting:hover { border-color: #2C2C2C; }
+
+/* Hero */
+.tk-hero { position: relative; height: 380px; overflow: hidden; }
+.tk-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: brightness(0.45) saturate(0.7); }
+.tk-hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 64px; gap: 12px;
+}
+.tk-hero-tag {
+  display: inline-block; padding: 4px 14px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.5); font-size: 12px;
+  color: rgba(255,255,255,0.85); width: fit-content; letter-spacing: 0.05em;
+}
+.tk-hero-overlay h1 {
+  margin: 0; font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: #fff; letter-spacing: -0.025em; line-height: 1.2;
+}
+.tk-hero-overlay p { margin: 0; font-size: 15px; color: rgba(255,255,255,0.78); max-width: 520px; line-height: 1.65; }
+
+/* Stats */
+.tk-stats {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  padding: 28px 0; background: #fff; border-bottom: 1px solid #EBEBEB;
+}
+.tk-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 48px; }
+.tk-stat strong { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #2C2C2C; }
+.tk-stat span { font-size: 12px; color: #6B6560; }
+.tk-stat-divider { width: 1px; height: 36px; background: #D8D4CC; }
+
+/* Body */
+.tk-body { padding: 32px 64px 56px; }
+
+.tk-filter { display: flex; gap: 10px; margin-bottom: 28px; }
+.tk-filter-btn {
+  padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  border: 1px solid #D8D4CC; background: #fff; color: #6B6560; cursor: pointer; transition: all 0.2s;
+}
+.tk-filter-btn:hover { border-color: #2C2C2C; color: #2C2C2C; }
+.tk-filter-btn.active { background: #2C2C2C; color: #fff; border-color: #2C2C2C; }
+
+.tk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.tk-card {
+  border-radius: 14px; overflow: hidden; background: #fff;
+  border: 1px solid #EBEBEB; transition: box-shadow 0.2s, transform 0.2s; cursor: pointer;
+}
+.tk-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.09); transform: translateY(-2px); }
+
+.tk-card-img { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+.tk-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.tk-card:hover .tk-card-img img { transform: scale(1.04); }
+.tk-badge {
+  position: absolute; top: 12px; left: 12px;
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
+  background: #D4BC8E; color: #fff;
+}
+.tk-category-tag {
+  position: absolute; top: 12px; right: 12px;
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,0.9); color: #2C2C2C;
+}
+
+.tk-card-body { padding: 16px 18px 18px; }
+.tk-card-region { font-size: 12px; color: #C5A059; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 4px; }
+.tk-card-name { margin: 0 0 8px; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+.tk-card-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #6B6560; margin-bottom: 14px; }
+.tk-rating { color: #C5A059; font-weight: 700; }
+
+.tk-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.tk-price { display: flex; align-items: baseline; gap: 2px; }
+.tk-price-num { font-size: 20px; font-weight: 800; color: #2C2C2C; letter-spacing: -0.02em; }
+.tk-price-unit { font-size: 13px; color: #6B6560; }
+.tk-book-btn {
+  padding: 9px 20px; border-radius: 8px; border: none;
+  background: #2C2C2C; color: #F9F7F2; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.tk-book-btn:hover { opacity: 0.8; }
+
+/* CTA */
+.tk-cta {
+  background: #1A1A1A; padding: 64px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 14px;
+}
+.tk-cta h2 { margin: 0; font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.025em; }
+.tk-cta p { margin: 0; font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 480px; }
+.tk-cta-btn {
+  margin-top: 8px; padding: 13px 32px; border-radius: 10px; border: none;
+  background: #D4BC8E; color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+}
+.tk-cta-btn:hover { background: #C4AA7A; }
