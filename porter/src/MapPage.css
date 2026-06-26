@@ -367,6 +367,36 @@
   box-shadow: 0 4px 14px rgba(0,0,0,0.2);
 }
 
+/* GPS 위치 버튼 */
+.map-locate-btn-wrap {
+  position: absolute;
+  bottom: 32px;
+  right: 12px;
+  z-index: 500;
+}
+
+.map-locate-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: #FFFFFF;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+  font-size: 22px;
+  color: #2A6EA4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, box-shadow 0.15s;
+  line-height: 1;
+}
+
+.map-locate-btn:hover {
+  background: #EAF3FB;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+}
+
 /* ── Right: Spot cards ───────────────────────────────────────── */
 .map-sidebar {
   width: 300px;

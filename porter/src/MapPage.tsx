@@ -62,9 +62,9 @@ const SPOTS: Spot[] = [
     overview: "속리산 국립공원은 충청북도 보은군에 위치한 대한민국 제6호 국립공원입니다. 천왕봉(1,058m)을 주봉으로 비로봉, 길상봉 등 8개 봉우리로 이루어진 산으로 법주사, 세조길 등 다양한 역사·문화 자원을 품고 있습니다.",
     description: "속리산은 1970년 국립공원으로 지정되었으며, 우리나라에서 손꼽히는 명산으로 '속세를 벗어난 산'이라는 뜻을 지니고 있습니다. 화강암 암봉과 울창한 산림이 조화를 이루며, 봄에는 진달래와 철쭉, 가을에는 단풍이 절경을 이룹니다. 정이품송(천연기념물 제103호)을 비롯해 천연기념물과 명승지가 다수 포함되어 있으며, 연간 200만 명 이상의 탐방객이 방문하는 충청도 대표 관광지입니다.",
     images: [
-      "/spot/spot-songnisan-1.jpg",
-      "/spot/spot-songnisan-2.jpg",
-      "/spot/spot-songnisan-3.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Songnisan.jpg/1280px-Songnisan.jpg",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1542086094-a61c1ab7c4b8?w=900&q=80&fit=crop",
     ],
     festivals: [
       {
@@ -104,9 +104,9 @@ const SPOTS: Spot[] = [
     overview: "법주사는 충청북도 보은군 속리산에 위치한 신라시대 고찰로, 553년(진흥왕 14)에 의신조사가 창건한 사찰입니다. 팔상전(국보 제55호)을 비롯해 대웅보전, 원통보전 등 다수의 국보·보물이 보존되어 있습니다.",
     description: "법주사는 '부처님의 법이 머무는 곳'이라는 뜻으로, 신라 진흥왕 14년(553년) 의신조사에 의해 창건되었습니다. 우리나라 유일의 목조 5층 탑인 팔상전(국보 제55호)이 있으며, 거대한 금동미륵대불(33m)로도 유명합니다. 경내에는 석련지(국보 제64호), 쌍사자석등(국보 제5호) 등 국보 3점과 다수의 보물이 보존되어 있어 한국 불교 문화의 정수를 만날 수 있습니다. 2018년 유네스코 세계유산 '산사, 한국의 산지승원' 7개소 중 하나로 등재되었습니다.",
     images: [
-      "/spot/spot-beopjusa-1.jpg",
-      "/spot/spot-beopjusa-2.jpg",
-      "/spot/spot-beopjusa-3.jpg",
+      "https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1684134549350-be5fd0d8feaa?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1638964663550-e2123ac8900b?w=900&q=80&fit=crop",
     ],
     festivals: [
       {
@@ -146,9 +146,9 @@ const SPOTS: Spot[] = [
     overview: "단양 소백산 패러글라이딩은 소백산 국립공원을 배경으로 단양강(남한강)의 절경을 하늘에서 감상할 수 있는 레저 스포츠 체험입니다. 도담삼봉, 구담봉 등 단양 8경을 조망하며 비행하는 특별한 경험을 제공합니다.",
     description: "충청북도 단양군은 남한강과 소백산이 어우러진 천혜의 경관을 자랑합니다. 패러글라이딩 이륙장에서 도약하면 도담삼봉, 석문, 구담봉 등 단양 8경을 한눈에 조망할 수 있습니다. 전문 조종사와 함께 탑승하는 2인 탠덤 비행으로 누구나 안전하게 즐길 수 있으며, 약 10~20분간의 비행 코스를 운영합니다. 봄·가을이 최고 성수기이며, 맑은 날에는 소백산 능선과 굽이치는 단양강의 절경이 장관을 이룹니다.",
     images: [
-      "/spot/spot-danyang-1.jpg",
-      "/spot/spot-danyang-2.jpg",
-      "/spot/spot-danyang-3.jpg",
+      "https://images.unsplash.com/photo-1601024445121-e5b82f020549?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=900&q=80&fit=crop",
     ],
     festivals: [
       {
@@ -188,9 +188,9 @@ const SPOTS: Spot[] = [
     overview: "종묘는 조선 역대 왕과 왕비의 신주를 봉안한 왕실 사당으로, 1995년 유네스코 세계유산에 등재되었습니다. 서울 종로구에 위치하며, 정전(국보 제227호)과 영녕전(보물 제821호)으로 구성됩니다.",
     description: "종묘는 1394년 조선 태조가 한양 천도와 함께 창건한 왕실 사당으로, 조선 왕조 519년의 역사를 관통하는 성소(聖所)입니다. 정전에는 49위, 영녕전에는 34위의 신주가 봉안되어 있습니다. 매년 5월 첫째 일요일에 거행되는 종묘제례(국가무형문화재 제56호)와 종묘제례악(유네스코 인류무형문화유산)은 조선 왕실 의례의 정수를 현재까지 이어오고 있습니다. 정전은 단일 목조 건물로 세계 최장(101m)에 속하며, 엄숙한 수평선이 강조된 건축미가 독보적입니다. 2001년에는 종묘제례악이 유네스코 인류무형문화유산에 등재되었습니다.",
     images: [
-      "/spot/spot-jongmyo-1.jpg",
-      "/spot/spot-jongmyo-2.jpg",
-      "/spot/spot-jongmyo-3.jpg",
+      "https://images.unsplash.com/photo-1575034176396-66241b37d3d2?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1638964663550-e2123ac8900b?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&q=80&fit=crop",
     ],
     vrSrc: "/vr/jongmyo.html",
     festivals: [
@@ -231,9 +231,9 @@ const SPOTS: Spot[] = [
     overview: "문묘는 공자를 비롯한 유교 성현들의 위패를 봉안한 사당이며, 성균관은 조선시대 최고 국립 교육기관입니다. 사적 제143호로 지정되어 있으며 현재 성균관대학교 내에 보존되어 있습니다.",
     description: "성균관은 고려 충렬왕 때(1298년) 설치된 국자감을 계승해 1398년(태조 7) 조선이 한양에 건립한 최고 국립 대학입니다. 문묘는 공자·맹자 등 유교 성현 133위의 위패를 모신 사당으로, 대성전(보물 제141호)과 동·서무로 구성됩니다. 성균관 명륜당(보물 제141호)은 유생들이 강학하던 강당으로, 조선 성리학 교육의 중심지였습니다. 현재도 매년 봄·가을 석전대제를 봉행하며 유교 전통을 계승하고 있습니다. 은행나무(서울시 기념물 제5호) 두 그루가 수백 년의 역사를 묵묵히 증언하고 있습니다.",
     images: [
-      "/spot/spot-munmyo-1.jpg",
-      "/spot/spot-munmyo-2.jpg",
-      "/spot/spot-munmyo-3.jpg",
+      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80&fit=crop",
     ],
     vrSrc: "/vr/munmyo.html",
     festivals: [
@@ -274,9 +274,9 @@ const SPOTS: Spot[] = [
     overview: "청주 고인쇄박물관은 세계 최초의 금속활자본인 직지심체요절(1377년)이 인쇄된 청주 흥덕사지에 건립된 박물관입니다. 고인쇄 문화의 역사와 가치를 체계적으로 보존·전시하고 있습니다.",
     description: "청주 고인쇄박물관은 1992년 흥덕사지 발굴 이후 1992년 개관한 박물관으로, '직지심체요절'의 인쇄지인 흥덕사지(사적 제315호)에 위치합니다. 직지심체요절은 1377년 청주 흥덕사에서 금속활자로 인쇄된 세계 최고(最古)의 금속활자 인쇄물로 2001년 유네스코 세계기록유산에 등재되었습니다. 박물관에서는 금속활자 제작 과정, 목판·금속활자 인쇄 시연, 직접 인쇄를 체험하는 교육 프로그램을 운영합니다. 매년 9~10월에는 '직지코리아 국제페스티벌'이 개최됩니다.",
     images: [
-      "/spot/spot-cheongju-1.jpg",
-      "/spot/spot-cheongju-2.jpg",
-      "/spot/spot-cheongju-3.jpg",
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=900&q=80&fit=crop",
     ],
     festivals: [
       {
@@ -342,6 +342,34 @@ function SpotMarker({ spot, onDetail }: { spot: Spot; onDetail: () => void }) {
         </div>
       </Popup>
     </Marker>
+  );
+}
+
+function LocateButton() {
+  const map = useMap();
+  const locate = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        map.flyTo([latitude, longitude], 13, { duration: 1.2 });
+        L.circleMarker([latitude, longitude], {
+          radius: 8,
+          fillColor: "#2A6EA4",
+          color: "#fff",
+          weight: 2,
+          fillOpacity: 1,
+        }).addTo(map).bindPopup("현재 위치").openPopup();
+      },
+      () => alert("위치 정보를 가져올 수 없습니다.")
+    );
+  };
+  return (
+    <div className="map-locate-btn-wrap">
+      <button className="map-locate-btn" onClick={locate} title="내 위치">
+        ⊕
+      </button>
+    </div>
   );
 }
 
@@ -649,6 +677,7 @@ export default function MapPage({ onNavigate }: Props) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               />
               <KoreaMask />
+              <LocateButton />
               <MapController spot={focusedSpot} />
               {focusedSpot && (
                 <SpotMarker
