@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./StorePage.css";
 
 type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
@@ -23,6 +24,7 @@ const PRODUCTS = [
 ];
 
 export default function StorePage({ onNavigate }: Props) {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div className="store-page">
       {/* Navbar */}
@@ -41,8 +43,22 @@ export default function StorePage({ onNavigate }: Props) {
             <a onClick={() => onNavigate("ticket")}>티켓</a>
           </div>
         </div>
-        <div className="store-nav-setting">설정</div>
+        <div className="store-nav-right">
+          <div className="store-nav-setting">설정</div>
+          <button className="store-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
+            <span /><span /><span />
+          </button>
+        </div>
       </nav>
+      {menuOpen && (
+        <div className="store-mobile-menu">
+          <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
+          <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
+          <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
+          <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
+          <a onClick={() => setMenuOpen(false)}>설정</a>
+        </div>
+      )}
 
       {/* Hero */}
       <section className="store-hero">

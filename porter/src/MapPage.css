@@ -1071,3 +1071,124 @@
   border-top: 1px solid #EBEBE4;
   padding-top: 14px;
 }
+
+/* ── Hamburger & Mobile Menu ─────────────────────────────────── */
+.map-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.map-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #2C2C2C;
+  border-radius: 2px;
+}
+
+.map-mobile-menu {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  z-index: 200;
+  background: #FFFFFF;
+  border: 1px solid #D8D4CC;
+  border-top: none;
+  border-radius: 0 0 0 12px;
+  min-width: 130px;
+  box-shadow: -2px 6px 24px rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+}
+
+.map-mobile-menu a {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #2C2C2C;
+  border-bottom: 1px solid #F0EDEA;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.map-mobile-menu a:last-child { border-bottom: none; }
+.map-mobile-menu a:active { background: #F9F7F2; }
+
+/* ── Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* 네비 정리 */
+  .map-nav { padding: 0 16px; }
+  .map-nav-links { display: none; }
+  .map-nav-setting { display: none; }
+  .map-hamburger { display: flex; }
+
+  /* 전체 페이지 스크롤 허용 */
+  .map-page { height: auto; min-height: 100dvh; overflow: auto; }
+
+  /* 히어로 숨기기 (지도 공간 확보) */
+  .map-hero { display: none; }
+
+  /* 바디: 수직 스택 */
+  .map-body {
+    flex-direction: column;
+    overflow: visible;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* 지도를 맨 위에 크게 */
+  .map-center {
+    order: 0;
+    height: 52vh;
+    flex: none;
+    width: 100%;
+  }
+
+  .map-search-row { padding: 8px 10px; gap: 6px; }
+  .map-container { border-radius: 0; border-left: none; border-right: none; border-top: none; }
+
+  /* AI 채팅 패널 모바일 */
+  .ai-chat-panel { border-radius: 0; border: none; border-top: 1px solid #D8D4CC; }
+  .ai-chat-character { width: 100px; }
+
+  /* 통계 카드: 가로 스크롤 한 줄 */
+  .map-stats {
+    order: 1;
+    width: 100%;
+    flex-direction: row;
+    flex-shrink: 0;
+    overflow-x: auto;
+    padding: 10px 12px;
+    gap: 10px;
+    border-bottom: 1px solid #EBEBE4;
+  }
+
+  .stat-card { min-width: 130px; flex: none; }
+  .stat-num { font-size: 22px; }
+
+  /* 스팟 카드: 가로 스크롤 한 줄 */
+  .map-sidebar {
+    order: 2;
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .spot-card { min-width: 200px; flex: none; }
+
+  /* 디테일 모달 모바일 */
+  .detail-modal { flex-direction: column; }
+  .detail-image-col { width: 100%; height: 220px; flex-shrink: 0; }
+  .detail-info-col { padding: 20px 16px; }
+  .detail-title { font-size: 22px; }
+  .detail-table { font-size: 13px; }
+  .detail-festival-grid { grid-template-columns: 1fr; }
+}

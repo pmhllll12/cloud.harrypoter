@@ -30,6 +30,7 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
   const [checkOut, setCheckOut] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const filtered = allTickets.filter((t) => {
     if (activeCategory !== "전체" && t.category !== activeCategory) return false;
@@ -54,8 +55,22 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
             <a className="active" onClick={() => onNavigate("ticket")}>티켓</a>
           </div>
         </div>
-        <div className="bk-nav-setting">설정</div>
+        <div className="bk-nav-right">
+          <div className="bk-nav-setting">설정</div>
+          <button className="bk-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
+            <span /><span /><span />
+          </button>
+        </div>
       </nav>
+      {menuOpen && (
+        <div className="bk-mobile-menu">
+          <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
+          <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
+          <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
+          <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
+          <a onClick={() => setMenuOpen(false)}>설정</a>
+        </div>
+      )}
 
       {/* Search bar */}
       <div className="bk-search-bar">
@@ -189,16 +204,18 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
 
           <div className="bk-filter-section">
             <div className="bk-filter-title">체험 유형</div>
-            {["액티비티", "자연탐방", "문화유산", "음식체험"].map((cat) => (
-              <label key={cat} className="bk-checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={activeCategory === cat || activeCategory === "전체"}
-                  onChange={() => setActiveCategory(activeCategory === cat ? "전체" : cat)}
-                />
-                <span>{cat}</span>
-              </label>
-            ))}
+            <div className="bk-checkbox-grid">
+              {["액티비티", "자연탐방", "문화유산", "음식체험"].map((cat) => (
+                <label key={cat} className="bk-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={activeCategory === cat || activeCategory === "전체"}
+                    onChange={() => setActiveCategory(activeCategory === cat ? "전체" : cat)}
+                  />
+                  <span>{cat}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="bk-filter-section">

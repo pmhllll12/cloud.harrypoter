@@ -318,3 +318,121 @@
   text-align: center;
 }
 .sd-see-reviews-btn:hover { background: #F5F0E8; }
+
+/* ── Hamburger & Mobile Menu ─────────────────────────────────── */
+.sd-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sd-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sd-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #2C2C2C;
+  border-radius: 2px;
+}
+
+.sd-mobile-menu {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  z-index: 200;
+  background: #FFFFFF;
+  border: 1px solid #D8D4CC;
+  border-top: none;
+  border-radius: 0 0 0 12px;
+  min-width: 130px;
+  box-shadow: -2px 6px 24px rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+}
+
+.sd-mobile-menu a {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #2C2C2C;
+  border-bottom: 1px solid #F0EDEA;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sd-mobile-menu a:last-child { border-bottom: none; }
+.sd-mobile-menu a:active { background: #F9F7F2; }
+
+/* ── Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Nav */
+  .sd-nav { padding: 0 16px; }
+  .sd-nav-links { display: none; }
+  .sd-nav-setting { display: none; }
+  .sd-hamburger { display: flex; }
+
+  /* Hero: 사진 위, 카드 아래 */
+  .sd-hero {
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sd-hero-bg {
+    position: relative;
+    height: 240px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .sd-hero-card {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 20px 16px 24px;
+    box-shadow: none;
+    border-bottom: 8px solid #F5F3F0;
+  }
+
+  .sd-hero-title { font-size: 22px; margin-bottom: 12px; }
+
+  /* Body: 리뷰 먼저, 탭 콘텐츠 아래 */
+  .sd-body {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* 리뷰 패널: 맨 위 */
+  .sd-review-panel {
+    order: -1;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    border-bottom: 8px solid #F5F3F0;
+    background: #FFFFFF;
+    position: static;
+    padding: 20px 16px;
+  }
+
+  /* 리뷰 목록: 기본 숨김, 열리면 표시 */
+  .sd-review-list { display: none; }
+  .sd-review-list--open { display: flex; }
+
+  /* 탭 영역 */
+  .sd-left { order: 1; padding: 20px 16px 48px; }
+  .sd-tabs { flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .sd-tab-btn { padding: 8px 14px; font-size: 13px; }
+  .sd-features-grid { grid-template-columns: repeat(2, 1fr); }
+  .sd-map-wrap { height: 200px; }
+}

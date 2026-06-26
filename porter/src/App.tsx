@@ -6,8 +6,9 @@ import TourInfoPage from "./TourInfoPage";
 import TicketPage from "./TicketPage";
 import BookingPage, { type Ticket } from "./BookingPage";
 import SpotDetailPage, { type Spot } from "./SpotDetailPage";
+import AIChatPage from "./AIChatPage";
 
-type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
+type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail" | "ai";
 
 type HistoryState = {
   page: Page;
@@ -67,6 +68,7 @@ export default function App() {
     setPage("spotdetail");
   }, []);
 
+  if (page === "ai") return <AIChatPage onNavigate={navigate} />;
   if (page === "map") return <MapPage onNavigate={navigate} />;
   if (page === "store") return <StorePage onNavigate={navigate} />;
   if (page === "tourinfo") return <TourInfoPage onNavigate={navigate} onViewSpot={handleViewSpot} />;
@@ -102,28 +104,7 @@ export default function App() {
 
       {/* 까치 인트로 애니메이션 */}
       <div className="magpie-overlay" aria-hidden="true">
-        <svg className="magpie-bird" viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg">
-          {/* 꼬리 */}
-          <path d="M22 54 Q4 70 8 90 L26 58 Z" fill="#0d0d0d"/>
-          <path d="M17 50 Q-2 64 3 84 L21 54 Z" fill="#1a1a1a"/>
-          {/* 몸통 */}
-          <ellipse cx="56" cy="54" rx="33" ry="17" fill="#111"/>
-          {/* 흰 배 */}
-          <ellipse cx="50" cy="59" rx="21" ry="12" fill="#f0f0f0"/>
-          {/* 날개 + 흰 패치 (함께 퍼덕) */}
-          <g className="magpie-wing-group">
-            <path d="M38 46 Q60 16 94 34 Q70 44 44 53 Z" fill="#111"/>
-            <path d="M43 48 Q63 21 89 36 Q67 44 48 52 Z" fill="#ddd"/>
-          </g>
-          {/* 머리 */}
-          <ellipse cx="97" cy="40" rx="18" ry="16" fill="#111"/>
-          {/* 부리 */}
-          <path d="M114 39 L134 36 L114 44 Z" fill="#555"/>
-          {/* 눈 */}
-          <circle cx="102" cy="35" r="4.5" fill="#fff"/>
-          <circle cx="103" cy="35" r="2.8" fill="#111"/>
-          <circle cx="101" cy="34" r="1" fill="#fff"/>
-        </svg>
+        <img className="magpie-bird" src="/magpie.png" alt="" />
       </div>
 
       <div className="landing-text">
@@ -134,6 +115,34 @@ export default function App() {
         <p className="landing-sub">
           서울부터 제주까지, AI가 전국의 자연과 문화유산을 생생하게 안내합니다
         </p>
+      </div>
+
+      {/* 모바일 전용 카테고리 카드 */}
+      <div className="mobile-menu">
+        <p className="mobile-menu-title">어디로 떠나볼까요?</p>
+        <div className="mobile-menu-grid">
+          <button className="mobile-menu-card" onClick={() => navigate("tourinfo")} style={{ "--card-accent": "#A4343A" } as React.CSSProperties}>
+            <span className="mobile-menu-label">관광정보</span>
+            <span className="mobile-menu-sub">명소·유산 탐색</span>
+          </button>
+          <button className="mobile-menu-card" onClick={() => navigate("map")} style={{ "--card-accent": "#2A6EA4" } as React.CSSProperties}>
+            <span className="mobile-menu-label">관광동선</span>
+            <span className="mobile-menu-sub">경로·지도 안내</span>
+          </button>
+          <button className="mobile-ai-center-btn" onClick={() => navigate("ai")}>
+            <span className="mobile-ai-icon">✦</span>
+            <span className="mobile-ai-text">AI 여행 가이드</span>
+            <span className="mobile-ai-arrow">→</span>
+          </button>
+          <button className="mobile-menu-card" onClick={() => navigate("store")} style={{ "--card-accent": "#2E7D52" } as React.CSSProperties}>
+            <span className="mobile-menu-label">스토어</span>
+            <span className="mobile-menu-sub">기념품·특산품</span>
+          </button>
+          <button className="mobile-menu-card" onClick={() => navigate("ticket")} style={{ "--card-accent": "#C5A059" } as React.CSSProperties}>
+            <span className="mobile-menu-label">티켓</span>
+            <span className="mobile-menu-sub">입장권 예매</span>
+          </button>
+        </div>
       </div>
     </section>
   );

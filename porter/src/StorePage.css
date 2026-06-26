@@ -289,3 +289,89 @@
 }
 
 .store-featured-btn:hover { opacity: 0.82; }
+
+/* ── Hamburger & Mobile Menu ─────────────────────────────────── */
+.store-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.store-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.store-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #2C2C2C;
+  border-radius: 2px;
+}
+
+.store-mobile-menu {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  z-index: 200;
+  background: #FFFFFF;
+  border: 1px solid #D8D4CC;
+  border-top: none;
+  border-radius: 0 0 0 12px;
+  min-width: 130px;
+  box-shadow: -2px 6px 24px rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+}
+
+.store-mobile-menu a {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #2C2C2C;
+  border-bottom: 1px solid #F0EDEA;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.store-mobile-menu a:last-child { border-bottom: none; }
+.store-mobile-menu a:active { background: #F9F7F2; }
+
+/* ── Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .store-nav { padding: 0 16px; }
+  .store-nav-links { display: none; }
+  .store-nav-setting { display: none; }
+  .store-hamburger { display: flex; }
+
+  .store-hero { height: 220px; }
+  .store-hero-overlay { padding: 0 20px; }
+  .store-hero-overlay h1 { font-size: 22px; }
+  .store-hero-overlay p { font-size: 13px; }
+
+  .store-products { padding: 28px 16px 48px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* 피처드 섹션: 세로 스택 (사진 위, 글 아래) */
+  .store-featured {
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px 16px 36px;
+  }
+
+  .store-featured-img {
+    width: 100%;
+    min-height: 220px;
+    border-radius: 10px;
+  }
+
+  .store-featured-content h2 { font-size: 20px; }
+  .store-featured-content p { font-size: 14px; max-width: 100%; }
+  .store-featured-btn { width: 100%; text-align: center; padding: 13px; }
+}

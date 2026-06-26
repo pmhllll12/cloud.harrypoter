@@ -1,5 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
-
 const SYSTEM_PROMPT = `당신은 대한민국 전국의 문화유산, 관광지, 맛집, 교통을 안내하는 AI 가이드입니다.
 
 다음 분야에서 상세하고 친절하게 안내해 드립니다:
@@ -20,26 +18,49 @@ export default async function handler(req: any, res: any) {
     messages: Array<{ role: "user" | "assistant"; content: string }>;
   };
 
-  if (!messages || !Array.isArray(messages)) {
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
     res.status(400).json({ error: "messages array required" });
     return;
   }
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const apiKey = process.env.GROQ_API_KEY ?? "";
+  if (!apiKey) {
+    res.status(500).json({ error: "GROQ_API_KEY 환경변수가 없습니다" });
+    return;
+  }
 
   try {
-    const response = await client.messages.create({
-      model: "claude-opus-4-8",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages,
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages.map((m) => ({ role: m.role, content: m.content })),
+        ],
+        max_tokens: 1024,
+        temperature: 0.7,
+      }),
     });
 
-    const text =
-      response.content[0].type === "text" ? response.content[0].text : "";
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Groq error:", response.status, errText);
+      res.status(500).json({ error: `Groq ${response.status}: ${errText} (key prefix: ${apiKey.slice(0,6)}, len: ${apiKey.length})` });
+      return;
+    }
+
+    const data = await response.json() as {
+      choices: Array<{ message: { content: string } }>;
+    };
+    const text = data.choices[0]?.message?.content ?? "";
     res.status(200).json({ reply: text });
   } catch (err: any) {
-    console.error("Claude API error:", err);
-    res.status(500).json({ error: "AI 응답 오류가 발생했습니다." });
+    console.error("Chat error:", err?.message);
+    res.status(500).json({ error: err?.message ?? "AI 응답 오류가 발생했습니다." });
   }
 }

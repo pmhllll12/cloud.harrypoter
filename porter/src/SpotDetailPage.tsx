@@ -234,6 +234,8 @@ const TABS = ["개요", "위치", "주요시설", "FAQ"];
 
 export default function SpotDetailPage({ onNavigate, spot }: Props) {
   const [activeTab, setActiveTab] = useState("개요");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reviewsOpen, setReviewsOpen] = useState(false);
   const detail = DETAIL_DATA[spot.name] ?? DETAIL_DATA["속리산 국립공원"];
 
   const renderTabContent = () => {
@@ -329,8 +331,24 @@ export default function SpotDetailPage({ onNavigate, spot }: Props) {
             <a onClick={() => onNavigate("ticket")}>티켓</a>
           </div>
         </div>
-        <div className="sd-nav-setting">설정</div>
+        <div className="sd-nav-right">
+          <div className="sd-nav-setting">설정</div>
+          <button className="sd-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
+            <span /><span /><span />
+          </button>
+        </div>
       </nav>
+
+      {/* 모바일 드롭다운 메뉴 */}
+      {menuOpen && (
+        <div className="sd-mobile-menu">
+          <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
+          <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
+          <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
+          <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
+          <a onClick={() => setMenuOpen(false)}>설정</a>
+        </div>
+      )}
 
       {/* Hero: full-height, card on left */}
       <div className="sd-hero">
@@ -398,7 +416,7 @@ export default function SpotDetailPage({ onNavigate, spot }: Props) {
               </div>
             ))}
           </div>
-          <div className="sd-review-list">
+          <div className={`sd-review-list${reviewsOpen ? " sd-review-list--open" : ""}`}>
             {detail.reviews.slice(0, 2).map((rv) => (
               <div className="sd-review-item" key={rv.name + rv.date}>
                 <div className="sd-review-top">
@@ -413,7 +431,9 @@ export default function SpotDetailPage({ onNavigate, spot }: Props) {
               </div>
             ))}
           </div>
-          <button className="sd-see-reviews-btn">리뷰 전체 보기</button>
+          <button className="sd-see-reviews-btn" onClick={() => setReviewsOpen(v => !v)}>
+            {reviewsOpen ? "리뷰 접기" : "리뷰 보기"}
+          </button>
         </aside>
       </div>
     </div>

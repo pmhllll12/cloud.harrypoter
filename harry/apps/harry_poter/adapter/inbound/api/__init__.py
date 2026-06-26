@@ -14,6 +14,7 @@ from harry_poter.adapter.inbound.api.v1.po_professor_festival_router import prof
 from harry_poter.adapter.inbound.api.v1.sm_dumbledore_store_router import dumbledore_store_router
 from harry_poter.adapter.inbound.api.v1.sm_weasley_booking_router import weasley_booking_router
 from harry_poter.adapter.inbound.api.v1.ticket_booking_router import ticket_booking_router
+from harry_poter.adapter.inbound.api.v1.tourism_chat_router import tourism_chat_router
 
 harry_poter_router = APIRouter(prefix="/harry-poter", tags=["harry-poter"])
 
@@ -54,5 +55,6 @@ harry_poter_router.include_router(wizard_point_router)
 harry_poter_router.include_router(lovegood_course_router)
 harry_poter_router.include_router(harry_user_router)
 harry_poter_router.include_router(professor_festival_router)
+harry_poter_router.include_router(tourism_chat_router)
 
 __all__ = ["harry_poter_router"]
