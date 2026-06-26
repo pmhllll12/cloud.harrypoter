@@ -21,7 +21,7 @@ for _p in (_BACKEND_ROOT, _APPS_ROOT, _CORE_ROOT):
 from sqlalchemy import select
 
 from database import AsyncSessionLocal, create_all_tables, dispose_engine
-from harry_poter.adapter.outbound.orm.dx_sphinx_quiz_orm import HeritageQuizOrm
+from harry.apps.harry_poter.adapter.outbound.orm.dx_sphinx_quiz_orm import HeritageQuizOrm
 
 HERITAGE_NAME = "성균관 문묘"
 

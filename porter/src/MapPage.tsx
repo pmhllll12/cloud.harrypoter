@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./MapPage.css";
@@ -18,6 +18,7 @@ type Spot = {
   tag: "추천" | "진행 중";
   title: string;
   region: string;
+  province: string;
   guide: string;
   progress: number;
   category: string;
@@ -28,17 +29,28 @@ type Spot = {
   provider: string;
   overview: string;
   description: string;
+  coordinates: [number, number];
   images: string[];
+  vrSrc?: string;
   festivals: Festival[];
 };
 
 type Message = { role: "user" | "ai"; text: string };
 
+const REGIONS: string[] = [
+  "강원도", "경기도", "경상남도", "경상북도", "광주광역시",
+  "대구광역시", "대전광역시", "부산광역시", "서울특별시", "세종특별자치시",
+  "울산광역시", "인천광역시", "전라남도", "전북특별자치도", "제주특별자치도",
+  "충청남도", "충청북도",
+];
+
 const SPOTS: Spot[] = [
   {
     tag: "추천",
     title: "속리산 국립공원",
-    region: "보은",
+    region: "충북 보은",
+    province: "충청북도",
+    coordinates: [36.5427, 127.8905],
     guide: "AI 관광 가이드",
     progress: 92,
     category: "국립공원",
@@ -50,9 +62,9 @@ const SPOTS: Spot[] = [
     overview: "속리산 국립공원은 충청북도 보은군에 위치한 대한민국 제6호 국립공원입니다. 천왕봉(1,058m)을 주봉으로 비로봉, 길상봉 등 8개 봉우리로 이루어진 산으로 법주사, 세조길 등 다양한 역사·문화 자원을 품고 있습니다.",
     description: "속리산은 1970년 국립공원으로 지정되었으며, 우리나라에서 손꼽히는 명산으로 '속세를 벗어난 산'이라는 뜻을 지니고 있습니다. 화강암 암봉과 울창한 산림이 조화를 이루며, 봄에는 진달래와 철쭉, 가을에는 단풍이 절경을 이룹니다. 정이품송(천연기념물 제103호)을 비롯해 천연기념물과 명승지가 다수 포함되어 있으며, 연간 200만 명 이상의 탐방객이 방문하는 충청도 대표 관광지입니다.",
     images: [
-      "/spot-songnisan-1.jpg",
-      "/spot-songnisan-2.jpg",
-      "/spot-songnisan-3.jpg",
+      "/spot/spot-songnisan-1.jpg",
+      "/spot/spot-songnisan-2.jpg",
+      "/spot/spot-songnisan-3.jpg",
     ],
     festivals: [
       {
@@ -78,7 +90,9 @@ const SPOTS: Spot[] = [
   {
     tag: "추천",
     title: "법주사",
-    region: "보은",
+    region: "충북 보은",
+    province: "충청북도",
+    coordinates: [36.5410, 127.8985],
     guide: "AI 관광 가이드",
     progress: 85,
     category: "사적",
@@ -90,9 +104,9 @@ const SPOTS: Spot[] = [
     overview: "법주사는 충청북도 보은군 속리산에 위치한 신라시대 고찰로, 553년(진흥왕 14)에 의신조사가 창건한 사찰입니다. 팔상전(국보 제55호)을 비롯해 대웅보전, 원통보전 등 다수의 국보·보물이 보존되어 있습니다.",
     description: "법주사는 '부처님의 법이 머무는 곳'이라는 뜻으로, 신라 진흥왕 14년(553년) 의신조사에 의해 창건되었습니다. 우리나라 유일의 목조 5층 탑인 팔상전(국보 제55호)이 있으며, 거대한 금동미륵대불(33m)로도 유명합니다. 경내에는 석련지(국보 제64호), 쌍사자석등(국보 제5호) 등 국보 3점과 다수의 보물이 보존되어 있어 한국 불교 문화의 정수를 만날 수 있습니다. 2018년 유네스코 세계유산 '산사, 한국의 산지승원' 7개소 중 하나로 등재되었습니다.",
     images: [
-      "/spot-beopjusa-1.jpg",
-      "/spot-beopjusa-2.jpg",
-      "/spot-beopjusa-3.jpg",
+      "/spot/spot-beopjusa-1.jpg",
+      "/spot/spot-beopjusa-2.jpg",
+      "/spot/spot-beopjusa-3.jpg",
     ],
     festivals: [
       {
@@ -118,7 +132,9 @@ const SPOTS: Spot[] = [
   {
     tag: "진행 중",
     title: "단양 패러글라이딩",
-    region: "단양",
+    region: "충북 단양",
+    province: "충청북도",
+    coordinates: [36.9879, 128.3707],
     guide: "AI 관광 가이드",
     progress: 60,
     category: "레저스포츠",
@@ -130,9 +146,9 @@ const SPOTS: Spot[] = [
     overview: "단양 소백산 패러글라이딩은 소백산 국립공원을 배경으로 단양강(남한강)의 절경을 하늘에서 감상할 수 있는 레저 스포츠 체험입니다. 도담삼봉, 구담봉 등 단양 8경을 조망하며 비행하는 특별한 경험을 제공합니다.",
     description: "충청북도 단양군은 남한강과 소백산이 어우러진 천혜의 경관을 자랑합니다. 패러글라이딩 이륙장에서 도약하면 도담삼봉, 석문, 구담봉 등 단양 8경을 한눈에 조망할 수 있습니다. 전문 조종사와 함께 탑승하는 2인 탠덤 비행으로 누구나 안전하게 즐길 수 있으며, 약 10~20분간의 비행 코스를 운영합니다. 봄·가을이 최고 성수기이며, 맑은 날에는 소백산 능선과 굽이치는 단양강의 절경이 장관을 이룹니다.",
     images: [
-      "/spot-danyang-1.jpg",
-      "/spot-danyang-2.jpg",
-      "/spot-danyang-3.jpg",
+      "/spot/spot-danyang-1.jpg",
+      "/spot/spot-danyang-2.jpg",
+      "/spot/spot-danyang-3.jpg",
     ],
     festivals: [
       {
@@ -156,9 +172,97 @@ const SPOTS: Spot[] = [
     ],
   },
   {
+    tag: "추천",
+    title: "종묘",
+    region: "서울 종로",
+    province: "서울특별시",
+    coordinates: [37.5747, 126.9945],
+    guide: "AI 관광 가이드",
+    progress: 95,
+    category: "세계유산",
+    year: 2026,
+    theme: "왕실문화·제례",
+    era: "조선시대",
+    method: "원형보존, 현장탐방",
+    provider: "문화재청",
+    overview: "종묘는 조선 역대 왕과 왕비의 신주를 봉안한 왕실 사당으로, 1995년 유네스코 세계유산에 등재되었습니다. 서울 종로구에 위치하며, 정전(국보 제227호)과 영녕전(보물 제821호)으로 구성됩니다.",
+    description: "종묘는 1394년 조선 태조가 한양 천도와 함께 창건한 왕실 사당으로, 조선 왕조 519년의 역사를 관통하는 성소(聖所)입니다. 정전에는 49위, 영녕전에는 34위의 신주가 봉안되어 있습니다. 매년 5월 첫째 일요일에 거행되는 종묘제례(국가무형문화재 제56호)와 종묘제례악(유네스코 인류무형문화유산)은 조선 왕실 의례의 정수를 현재까지 이어오고 있습니다. 정전은 단일 목조 건물로 세계 최장(101m)에 속하며, 엄숙한 수평선이 강조된 건축미가 독보적입니다. 2001년에는 종묘제례악이 유네스코 인류무형문화유산에 등재되었습니다.",
+    images: [
+      "/spot/spot-jongmyo-1.jpg",
+      "/spot/spot-jongmyo-2.jpg",
+      "/spot/spot-jongmyo-3.jpg",
+    ],
+    vrSrc: "/vr/jongmyo.html",
+    festivals: [
+      {
+        name: "종묘제례",
+        period: "5월 첫째 일요일",
+        location: "서울 종로구 종묘",
+        desc: "조선 역대 왕과 왕비의 신위에 올리는 국가 제례. 종묘제례악(유네스코 인류무형문화유산) 연주와 일무(佾舞)가 함께 펼쳐지며, 조선 왕실 의례를 온전히 재현합니다.",
+      },
+      {
+        name: "종묘 야간 개장",
+        period: "봄·가을 (4~5월, 10월)",
+        location: "서울 종로구 종묘",
+        desc: "야간 조명 아래 고요한 종묘 정전을 탐방하는 특별 프로그램. 낮과 전혀 다른 엄숙하고 신비로운 분위기를 경험할 수 있습니다.",
+      },
+      {
+        name: "궁중문화축전",
+        period: "4월 말 ~ 5월 초",
+        location: "서울 4대 궁궐 및 종묘",
+        desc: "경복궁·창덕궁·덕수궁·경희궁·종묘를 무대로 펼쳐지는 궁중 문화 축제. 수문장 교대식, 왕실 복식 체험, 전통 공연이 연계 운영됩니다.",
+      },
+    ],
+  },
+  {
+    tag: "추천",
+    title: "문묘 및 성균관",
+    region: "서울 종로",
+    province: "서울특별시",
+    coordinates: [37.5889, 126.9979],
+    guide: "AI 관광 가이드",
+    progress: 82,
+    category: "사적",
+    year: 2026,
+    theme: "유교문화·교육",
+    era: "조선시대",
+    method: "고증, 원형보존",
+    provider: "성균관",
+    overview: "문묘는 공자를 비롯한 유교 성현들의 위패를 봉안한 사당이며, 성균관은 조선시대 최고 국립 교육기관입니다. 사적 제143호로 지정되어 있으며 현재 성균관대학교 내에 보존되어 있습니다.",
+    description: "성균관은 고려 충렬왕 때(1298년) 설치된 국자감을 계승해 1398년(태조 7) 조선이 한양에 건립한 최고 국립 대학입니다. 문묘는 공자·맹자 등 유교 성현 133위의 위패를 모신 사당으로, 대성전(보물 제141호)과 동·서무로 구성됩니다. 성균관 명륜당(보물 제141호)은 유생들이 강학하던 강당으로, 조선 성리학 교육의 중심지였습니다. 현재도 매년 봄·가을 석전대제를 봉행하며 유교 전통을 계승하고 있습니다. 은행나무(서울시 기념물 제5호) 두 그루가 수백 년의 역사를 묵묵히 증언하고 있습니다.",
+    images: [
+      "/spot/spot-munmyo-1.jpg",
+      "/spot/spot-munmyo-2.jpg",
+      "/spot/spot-munmyo-3.jpg",
+    ],
+    vrSrc: "/vr/munmyo.html",
+    festivals: [
+      {
+        name: "석전대제",
+        period: "봄(음력 2월) · 가을(음력 8월) 상정일(上丁日)",
+        location: "서울 종로구 성균관 문묘",
+        desc: "공자를 비롯한 유교 성현들에게 올리는 제향. 국가무형문화재 제85호로 지정되어 있으며, 일무(佾舞)와 문묘제례악이 수반됩니다.",
+      },
+      {
+        name: "성균관 유교문화 축제",
+        period: "5월 중순",
+        location: "서울 종로구 성균관대학교",
+        desc: "조선시대 과거 시험 재현, 유생 복식 체험, 전통 다례 시연 등 유교 문화를 체험하는 행사. 명륜당과 대성전 일원에서 진행됩니다.",
+      },
+      {
+        name: "인문학 야행",
+        period: "10월 중순",
+        location: "서울 종로구 일원",
+        desc: "종묘·성균관·창덕궁을 잇는 야간 인문학 탐방 프로그램. 전문 해설사와 함께 조선 유교 문화의 흐름을 걸으며 탐구합니다.",
+      },
+    ],
+  },
+  {
     tag: "진행 중",
     title: "청주 고인쇄박물관",
-    region: "청주",
+    region: "충북 청주",
+    province: "충청북도",
+    coordinates: [36.6369, 127.4754],
     guide: "AI 관광 가이드",
     progress: 74,
     category: "박물관",
@@ -170,9 +274,9 @@ const SPOTS: Spot[] = [
     overview: "청주 고인쇄박물관은 세계 최초의 금속활자본인 직지심체요절(1377년)이 인쇄된 청주 흥덕사지에 건립된 박물관입니다. 고인쇄 문화의 역사와 가치를 체계적으로 보존·전시하고 있습니다.",
     description: "청주 고인쇄박물관은 1992년 흥덕사지 발굴 이후 1992년 개관한 박물관으로, '직지심체요절'의 인쇄지인 흥덕사지(사적 제315호)에 위치합니다. 직지심체요절은 1377년 청주 흥덕사에서 금속활자로 인쇄된 세계 최고(最古)의 금속활자 인쇄물로 2001년 유네스코 세계기록유산에 등재되었습니다. 박물관에서는 금속활자 제작 과정, 목판·금속활자 인쇄 시연, 직접 인쇄를 체험하는 교육 프로그램을 운영합니다. 매년 9~10월에는 '직지코리아 국제페스티벌'이 개최됩니다.",
     images: [
-      "/spot-cheongju-1.jpg",
-      "/spot-cheongju-2.jpg",
-      "/spot-cheongju-3.jpg",
+      "/spot/spot-cheongju-1.jpg",
+      "/spot/spot-cheongju-2.jpg",
+      "/spot/spot-cheongju-3.jpg",
     ],
     festivals: [
       {
@@ -198,24 +302,47 @@ const SPOTS: Spot[] = [
 ];
 
 
-const AI_RESPONSES: Record<string, string> = {
-  default: "안녕하세요! 충북 관광 AI 가이드입니다. 여행 계획, 관광지 추천, 맛집 정보 등 무엇이든 물어보세요!",
-};
+const spotIcon = L.divIcon({
+  className: "",
+  html: `<div class="spot-pin"></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 22],
+  popupAnchor: [0, -24],
+});
 
-function getAIResponse(input: string): string {
-  if (input.includes("속리산") || input.includes("국립공원")) {
-    return "속리산 국립공원은 충북 보은에 위치한 아름다운 명산입니다. 법주사, 세조길, 문장대 등 볼거리가 많아요. 봄 철쭉과 가을 단풍이 특히 아름답습니다!";
-  }
-  if (input.includes("법주사")) {
-    return "법주사는 신라 시대에 창건된 유서 깊은 사찰입니다. 국보인 쌍사자석등과 팔상전이 있으며, 속리산 국립공원 내에 위치해 있어 함께 방문하기 좋습니다.";
-  }
-  if (input.includes("맛집") || input.includes("음식")) {
-    return "충북의 대표 음식으로는 청주 순대국밥, 단양 마늘요리, 보은 대추 관련 음식이 있습니다. 지역 특산물을 활용한 맛집이 많으니 꼭 방문해 보세요!";
-  }
-  if (input.includes("추천") || input.includes("어디")) {
-    return "충북 여행지로는 속리산 국립공원, 단양 8경, 청주 고인쇄박물관, 청남대를 추천드립니다. 계절에 따라 다양한 매력을 즐길 수 있어요!";
-  }
-  return "좋은 질문이에요! 충북에는 아름다운 자연과 역사 문화 명소가 가득합니다. 더 구체적인 장소나 활동에 대해 알고 싶으시면 말씀해 주세요.";
+function MapController({ spot }: { spot: Spot | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (spot) {
+      map.flyTo(spot.coordinates, 14, { duration: 1.2 });
+    }
+  }, [spot, map]);
+  return null;
+}
+
+function SpotMarker({ spot, onDetail }: { spot: Spot; onDetail: () => void }) {
+  const markerRef = useRef<L.Marker>(null);
+
+  useEffect(() => {
+    markerRef.current?.openPopup();
+  }, [spot]);
+
+  return (
+    <Marker ref={markerRef} position={spot.coordinates} icon={spotIcon}>
+      <Popup className="spot-popup">
+        <div className="spot-popup-inner">
+          <span className={`spot-popup-tag spot-popup-tag--${spot.tag === "추천" ? "active" : "progress"}`}>
+            {spot.tag}
+          </span>
+          <strong className="spot-popup-title">{spot.title}</strong>
+          <span className="spot-popup-region">{spot.region}</span>
+          <button className="spot-popup-btn" onClick={onDetail}>
+            자세히 보기 →
+          </button>
+        </div>
+      </Popup>
+    </Marker>
+  );
 }
 
 function KoreaMask() {
@@ -298,18 +425,28 @@ function TouristDetail({
   const [imgError, setImgError] = useState<Record<number, boolean>>({});
   const [activeFestival, setActiveFestival] = useState<Festival | null>(null);
 
-  const prev = () => setImgIdx((i) => (i - 1 + spot.images.length) % spot.images.length);
-  const next = () => setImgIdx((i) => (i + 1) % spot.images.length);
+  const totalSlides = spot.images.length + (spot.vrSrc ? 1 : 0);
+  const isVrSlide = spot.vrSrc != null && imgIdx === spot.images.length;
+
+  const prev = () => setImgIdx((i) => (i - 1 + totalSlides) % totalSlides);
+  const next = () => setImgIdx((i) => (i + 1) % totalSlides);
 
   return (
     <div className="detail-overlay" onClick={onClose}>
       <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
         <button className="detail-close" onClick={onClose}>✕</button>
 
-        {/* Left: image carousel */}
+        {/* Left: image / VR carousel */}
         <div className="detail-image-col">
           <div className="detail-image-wrap">
-            {imgError[imgIdx] ? (
+            {isVrSlide ? (
+              <iframe
+                src={spot.vrSrc}
+                className="detail-vr-frame"
+                title="VR 탐방"
+                allowFullScreen
+              />
+            ) : imgError[imgIdx] ? (
               <div className="detail-image-fallback">
                 <span>{spot.title}</span>
               </div>
@@ -322,9 +459,12 @@ function TouristDetail({
             )}
           </div>
           <div className="detail-image-nav">
-            <button onClick={prev} disabled={spot.images.length <= 1}>‹</button>
-            <span>{imgIdx + 1} / {spot.images.length}</span>
-            <button onClick={next} disabled={spot.images.length <= 1}>›</button>
+            <button onClick={prev} disabled={totalSlides <= 1}>‹</button>
+            <span>
+              {isVrSlide ? "VR" : imgIdx + 1} / {totalSlides}
+              {isVrSlide && <span className="detail-vr-badge">3D 탐방</span>}
+            </span>
+            <button onClick={next} disabled={totalSlides <= 1}>›</button>
           </div>
         </div>
 
@@ -400,30 +540,15 @@ function TouristDetail({
 }
 
 export default function MapPage({ onNavigate }: Props) {
+  const [focusedSpot, setFocusedSpot] = useState<Spot | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
-  const [aiMode, setAiMode] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "ai", text: AI_RESPONSES.default },
-  ]);
-  const [input, setInput] = useState("");
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [regionOpen, setRegionOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const sendMessage = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    const userMsg: Message = { role: "user", text: trimmed };
-    const aiMsg: Message = { role: "ai", text: getAIResponse(trimmed) };
-    setMessages((prev) => [...prev, userMsg, aiMsg]);
-    setInput("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") sendMessage();
-  };
+  const filteredSpots = selectedRegion
+    ? SPOTS.filter((s) => s.province === selectedRegion)
+    : SPOTS;
 
   return (
     <div className="map-page">
@@ -445,8 +570,20 @@ export default function MapPage({ onNavigate }: Props) {
         </div>
         <div className="map-nav-right">
           <div className="map-nav-setting">설정</div>
+          <button className="map-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
+      {menuOpen && (
+        <div className="map-mobile-menu">
+          <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
+          <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
+          <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
+          <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
+          <a onClick={() => setMenuOpen(false)}>설정</a>
+        </div>
+      )}
 
       {/* Hero */}
       <div className="map-hero">
@@ -491,79 +628,84 @@ export default function MapPage({ onNavigate }: Props) {
 
         {/* Center: map with overlaid AI chat */}
         <div className="map-center">
-          {aiMode ? (
-            <div className="ai-chat-panel">
-              <div className="ai-chat-character">
-                <img src="/ai-character-male.png" alt="AI 가이드" />
-              </div>
-              <div className="ai-chat-area">
-                <div className="ai-chat-messages">
-                  {messages.map((msg, i) => (
-                    <div key={i} className={`ai-msg ai-msg--${msg.role}`}>
-                      {msg.role === "ai" && (
-                        <div className="ai-msg-avatar">AI</div>
-                      )}
-                      <div className="ai-msg-bubble">{msg.text}</div>
-                    </div>
-                  ))}
-                  <div ref={chatEndRef} />
-                </div>
-                <div className="ai-chat-input-row">
-                  <input
-                    className="ai-chat-input"
-                    placeholder="관광지, 맛집, 일정 등 무엇이든 물어보세요..."
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  />
-                  <button className="ai-chat-send" onClick={sendMessage}>
-                    전송
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="map-search-row">
-                <span className="map-search-label">관광지 검색</span>
-                <input className="map-search-input" placeholder="검색..." />
-                <button className="map-filter-btn">필터</button>
-              </div>
-              <div className="map-container">
-                <button
-                  className="map-ai-btn"
-                  onClick={() => setAiMode(true)}
-                >
-                  AI 검색
-                </button>
-                <MapContainer
-                  center={[35.0, 127.8]}
-                  zoom={7}
-                  minZoom={7}
-                  maxZoom={13}
-                  maxBounds={[[32.0, 123.5], [39.8, 132.8]]}
-                  maxBoundsViscosity={1.0}
-                  style={{ width: "100%", height: "100%" }}
-                  zoomControl={true}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  <KoreaMask />
-                </MapContainer>
-              </div>
-            </>
-          )}
+          <div className="map-search-row">
+            <span className="map-search-label">관광지 검색</span>
+            <input className="map-search-input" placeholder="검색..." />
+            <button className="map-filter-btn">필터</button>
+          </div>
+          <div className="map-container">
+            <MapContainer
+              center={[35.0, 127.8]}
+              zoom={7}
+              minZoom={7}
+              maxZoom={13}
+              maxBounds={[[32.0, 123.5], [39.8, 132.8]]}
+              maxBoundsViscosity={1.0}
+              style={{ width: "100%", height: "100%" }}
+              zoomControl={true}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              />
+              <KoreaMask />
+              <MapController spot={focusedSpot} />
+              {focusedSpot && (
+                <SpotMarker
+                  spot={focusedSpot}
+                  onDetail={() => setSelectedSpot(focusedSpot)}
+                />
+              )}
+            </MapContainer>
+          </div>
         </div>
 
         {/* Right: spot cards */}
         <div className="map-sidebar">
-          {SPOTS.map((s) => (
+          {/* Region selector */}
+          <div className="region-selector">
+            <button
+              className="region-selector-btn"
+              onClick={() => setRegionOpen((o) => !o)}
+            >
+              <span>{selectedRegion ?? "지역 선택"}</span>
+              <span className="region-selector-arrow">{regionOpen ? "▲" : "▼"}</span>
+            </button>
+            {regionOpen && (
+              <>
+                <div className="region-overlay" onClick={() => setRegionOpen(false)} />
+                <div className="region-dropdown">
+                  <button
+                    className={`region-btn-all ${selectedRegion === null ? "active" : ""}`}
+                    onClick={() => { setSelectedRegion(null); setRegionOpen(false); }}
+                  >
+                    전체
+                  </button>
+                  <div className="region-group-btns">
+                    {REGIONS.map((r) => (
+                      <button
+                        key={r}
+                        className={`region-btn ${selectedRegion === r ? "active" : ""}`}
+                        onClick={() => { setSelectedRegion(r); setRegionOpen(false); }}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {filteredSpots.length === 0 && (
+            <div className="region-empty">추후 추가 예정입니다.</div>
+          )}
+
+          {filteredSpots.map((s) => (
             <div
-              className="spot-card"
+              className={`spot-card${focusedSpot?.title === s.title ? " spot-card--focused" : ""}`}
               key={s.title}
-              onClick={() => setSelectedSpot(s)}
+              onClick={() => setFocusedSpot(s)}
             >
               <div className={`spot-tag spot-tag--${s.tag === "추천" ? "active" : "progress"}`}>
                 {s.tag}

@@ -53,7 +53,12 @@ app.add_middleware(
 )
 
 app.include_router(harry_poter_router)
-app.mount("/hogwarts/map/map_file", StaticFiles(directory=_STATIC_DIR / "map_file"), name="map_file")
+
+app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
+
+_MAP_FILE_DIR = _STATIC_DIR / "map_file"
+if _MAP_FILE_DIR.exists():
+    app.mount("/hogwarts/map/map_file", StaticFiles(directory=_MAP_FILE_DIR), name="map_file")
 
 
 @app.get("/ping")
