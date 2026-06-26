@@ -44,7 +44,6 @@ export default function StorePage({ onNavigate }: Props) {
           </div>
         </div>
         <div className="store-nav-right">
-          <div className="store-nav-setting">설정</div>
           <button className="store-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
             <span /><span /><span />
           </button>
@@ -56,7 +55,6 @@ export default function StorePage({ onNavigate }: Props) {
           <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
           <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
           <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
-          <a onClick={() => setMenuOpen(false)}>설정</a>
         </div>
       )}
 

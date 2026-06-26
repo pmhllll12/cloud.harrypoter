@@ -96,7 +96,6 @@ export default function TicketPage({ onNavigate, onBook }: Props) {
           </div>
         </div>
         <div className="tk-nav-right">
-          <div className="tk-nav-setting">설정</div>
           <button className="tk-hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="메뉴">
             <span /><span /><span />
           </button>
@@ -108,7 +107,6 @@ export default function TicketPage({ onNavigate, onBook }: Props) {
           <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
           <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
           <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
-          <a onClick={() => setMenuOpen(false)}>설정</a>
         </div>
       )}
 
