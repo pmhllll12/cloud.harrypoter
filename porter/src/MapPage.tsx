@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./MapPage.css";
@@ -29,6 +29,7 @@ type Spot = {
   provider: string;
   overview: string;
   description: string;
+  coordinates: [number, number];
   images: string[];
   vrSrc?: string;
   festivals: Festival[];
@@ -47,6 +48,7 @@ const SPOTS: Spot[] = [
     title: "속리산 국립공원",
     region: "충북 보은",
     province: "충청북도",
+    coordinates: [36.5427, 127.8905],
     guide: "AI 관광 가이드",
     progress: 92,
     category: "국립공원",
@@ -88,6 +90,7 @@ const SPOTS: Spot[] = [
     title: "법주사",
     region: "충북 보은",
     province: "충청북도",
+    coordinates: [36.5410, 127.8985],
     guide: "AI 관광 가이드",
     progress: 85,
     category: "사적",
@@ -129,6 +132,7 @@ const SPOTS: Spot[] = [
     title: "단양 패러글라이딩",
     region: "충북 단양",
     province: "충청북도",
+    coordinates: [36.9879, 128.3707],
     guide: "AI 관광 가이드",
     progress: 60,
     category: "레저스포츠",
@@ -170,6 +174,7 @@ const SPOTS: Spot[] = [
     title: "종묘",
     region: "서울 종로",
     province: "서울특별시",
+    coordinates: [37.5747, 126.9945],
     guide: "AI 관광 가이드",
     progress: 95,
     category: "세계유산",
@@ -212,6 +217,7 @@ const SPOTS: Spot[] = [
     title: "문묘 및 성균관",
     region: "서울 종로",
     province: "서울특별시",
+    coordinates: [37.5889, 126.9979],
     guide: "AI 관광 가이드",
     progress: 82,
     category: "사적",
@@ -254,6 +260,7 @@ const SPOTS: Spot[] = [
     title: "청주 고인쇄박물관",
     region: "충북 청주",
     province: "충청북도",
+    coordinates: [36.6369, 127.4754],
     guide: "AI 관광 가이드",
     progress: 74,
     category: "박물관",
@@ -292,6 +299,49 @@ const SPOTS: Spot[] = [
   },
 ];
 
+
+const spotIcon = L.divIcon({
+  className: "",
+  html: `<div class="spot-pin"></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 22],
+  popupAnchor: [0, -24],
+});
+
+function MapController({ spot }: { spot: Spot | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (spot) {
+      map.flyTo(spot.coordinates, 14, { duration: 1.2 });
+    }
+  }, [spot, map]);
+  return null;
+}
+
+function SpotMarker({ spot, onDetail }: { spot: Spot; onDetail: () => void }) {
+  const markerRef = useRef<L.Marker>(null);
+
+  useEffect(() => {
+    markerRef.current?.openPopup();
+  }, [spot]);
+
+  return (
+    <Marker ref={markerRef} position={spot.coordinates} icon={spotIcon}>
+      <Popup className="spot-popup">
+        <div className="spot-popup-inner">
+          <span className={`spot-popup-tag spot-popup-tag--${spot.tag === "추천" ? "active" : "progress"}`}>
+            {spot.tag}
+          </span>
+          <strong className="spot-popup-title">{spot.title}</strong>
+          <span className="spot-popup-region">{spot.region}</span>
+          <button className="spot-popup-btn" onClick={onDetail}>
+            자세히 보기 →
+          </button>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
 
 function KoreaMask() {
   const map = useMap();
@@ -488,6 +538,7 @@ function TouristDetail({
 }
 
 export default function MapPage({ onNavigate }: Props) {
+  const [focusedSpot, setFocusedSpot] = useState<Spot | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -583,6 +634,13 @@ export default function MapPage({ onNavigate }: Props) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               />
               <KoreaMask />
+              <MapController spot={focusedSpot} />
+              {focusedSpot && (
+                <SpotMarker
+                  spot={focusedSpot}
+                  onDetail={() => setSelectedSpot(focusedSpot)}
+                />
+              )}
             </MapContainer>
           </div>
         </div>
@@ -630,11 +688,10 @@ export default function MapPage({ onNavigate }: Props) {
 
           {filteredSpots.map((s) => (
             <div
-              className="spot-card"
+              className={`spot-card${focusedSpot?.title === s.title ? " spot-card--focused" : ""}`}
               key={s.title}
-              onClick={() => setSelectedSpot(s)}
+              onClick={() => setFocusedSpot(s)}
             >
-
               <div className={`spot-tag spot-tag--${s.tag === "추천" ? "active" : "progress"}`}>
                 {s.tag}
               </div>
