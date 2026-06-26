@@ -602,16 +602,16 @@ export default function MapPage({ onNavigate }: Props) {
             <span /><span /><span />
           </button>
         </div>
+        {menuOpen && (
+          <div className="map-mobile-menu">
+            <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
+            <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
+            <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
+            <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
+            <a onClick={() => setMenuOpen(false)}>설정</a>
+          </div>
+        )}
       </nav>
-      {menuOpen && (
-        <div className="map-mobile-menu">
-          <a onClick={() => { onNavigate("tourinfo"); setMenuOpen(false); }}>관광정보</a>
-          <a onClick={() => { onNavigate("map"); setMenuOpen(false); }}>관광동선</a>
-          <a onClick={() => { onNavigate("store"); setMenuOpen(false); }}>스토어</a>
-          <a onClick={() => { onNavigate("ticket"); setMenuOpen(false); }}>티켓</a>
-          <a onClick={() => setMenuOpen(false)}>설정</a>
-        </div>
-      )}
 
       {/* Hero */}
       <div className="map-hero">

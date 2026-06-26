@@ -153,6 +153,87 @@
 
 .bk-search-btn:hover { background: #b8913f; }
 
+/* ── Search Result Category Screen ──────────────────────────── */
+.bk-result-cats-section {
+  padding: 24px 32px 32px;
+}
+
+.bk-result-cats-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bk-result-cats-region {
+  font-size: 16px;
+  color: #2C2C2C;
+}
+
+.bk-result-cats-total {
+  font-size: 13px;
+  color: #6B6560;
+}
+
+.bk-result-cats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.bk-result-cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 20px;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  background: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.bk-result-cat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+}
+
+.bk-result-cat-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.bk-result-cat-label {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.bk-result-cat-count {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* 뒤로가기 버튼 */
+.bk-back-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #D8D4CC;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2C2C2C;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.bk-back-btn:hover { border-color: #2C2C2C; }
+
 /* ── Results Header ──────────────────────────────────────────── */
 .bk-results-header {
   display: flex;
@@ -599,8 +680,15 @@
     border-radius: 10px;
   }
 
+  /* 검색 결과 카테고리 타일 */
+  .bk-result-cats-section { padding: 20px 16px 24px; }
+  .bk-result-cats-grid { gap: 12px; }
+  .bk-result-cat-card { padding: 22px 12px; gap: 8px; }
+  .bk-result-cat-icon { font-size: 30px; }
+  .bk-result-cat-label { font-size: 15px; }
+
   /* 결과 헤더 */
-  .bk-results-header { padding: 0 16px 10px; }
+  .bk-results-header { padding: 0 16px 10px; flex-wrap: wrap; gap: 8px; }
   .bk-results-count { font-size: 13px; }
 
   /* 카테고리 탭 */

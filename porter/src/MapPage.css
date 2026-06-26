@@ -19,7 +19,8 @@
   padding: 0 32px;
   background: #FFFFFF;
   border-bottom: 1px solid #D8D4CC;
-  z-index: 10;
+  z-index: 800;
+  position: relative;
 }
 
 .map-nav-left {
@@ -1123,16 +1124,16 @@
 }
 
 .map-mobile-menu {
-  position: fixed;
-  top: 56px;
+  position: absolute;
+  top: 100%;
   right: 0;
-  z-index: 200;
+  z-index: 9999;
   background: #FFFFFF;
   border: 1px solid #D8D4CC;
   border-top: none;
   border-radius: 0 0 0 12px;
-  min-width: 130px;
-  box-shadow: -2px 6px 24px rgba(0,0,0,0.14);
+  min-width: 150px;
+  box-shadow: -2px 6px 24px rgba(0,0,0,0.22);
   display: flex;
   flex-direction: column;
 }
@@ -1213,6 +1214,41 @@
   }
 
   .spot-card { min-width: 200px; flex: none; }
+
+  /* 지역 선택 드롭다운: 모바일에서 fixed 하단 시트 */
+  .region-selector { position: static; }
+
+  .region-dropdown {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    max-height: 70vh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    padding: 16px 16px 32px;
+    z-index: 600;
+  }
+
+  .region-group-btns {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .region-btn {
+    padding: 8px 6px;
+    font-size: 12px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .region-btn-all {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .region-overlay { z-index: 599; }
 
   /* 디테일 모달 모바일 */
   .detail-modal { flex-direction: column; }

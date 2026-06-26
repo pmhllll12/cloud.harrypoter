@@ -23,6 +23,13 @@ type Props = {
 
 const CATEGORIES = ["전체", "액티비티", "자연탐방", "문화유산", "음식체험"];
 
+const RESULT_CATS = [
+  { label: "관광지",   category: "자연탐방", icon: "🏔️", color: "#2E7D52", bg: "#F0F7F4" },
+  { label: "문화유산", category: "문화유산", icon: "🏛️", color: "#7D4A4A", bg: "#FAF5F0" },
+  { label: "액티비티", category: "액티비티", icon: "🪂", color: "#2A6EA4", bg: "#F0F5FA" },
+  { label: "음식점",   category: "음식체험", icon: "🍽️", color: "#8B5E1A", bg: "#FAF7EF" },
+];
+
 export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
   const [activeCategory, setActiveCategory] = useState("전체");
   const [guests, setGuests] = useState(2);
@@ -31,6 +38,12 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searched, setSearched] = useState(false);
+
+  const handleSearch = () => {
+    setSearched(true);
+    setActiveCategory("전체");
+  };
 
   const filtered = allTickets.filter((t) => {
     if (activeCategory !== "전체" && t.category !== activeCategory) return false;
@@ -107,11 +120,47 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
             <button onClick={() => setGuests((g) => g + 1)}>+</button>
           </div>
         </div>
-        <button className="bk-search-btn">검색</button>
+        <button className="bk-search-btn" onClick={handleSearch}>검색</button>
       </div>
+
+      {/* 검색 후 카테고리 선택 화면 */}
+      {searched && activeCategory === "전체" && (
+        <section className="bk-result-cats-section">
+          <div className="bk-result-cats-header">
+            <span className="bk-result-cats-region"><strong>{ticket.region}</strong> 검색 결과</span>
+            <span className="bk-result-cats-total">총 {allTickets.length}개의 체험</span>
+          </div>
+          <div className="bk-result-cats-grid">
+            {RESULT_CATS.map(({ label, category, icon, color, bg }) => {
+              const count = allTickets.filter((t) => t.category === category).length;
+              return (
+                <button
+                  key={label}
+                  className="bk-result-cat-card"
+                  style={{ background: bg, borderColor: color + "44" }}
+                  onClick={() => setActiveCategory(category)}
+                >
+                  <span className="bk-result-cat-icon">{icon}</span>
+                  <span className="bk-result-cat-label" style={{ color }}>{label}</span>
+                  <span className="bk-result-cat-count" style={{ color }}>{count}개</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* 카테고리 선택 후 목록 */}
+      {(!searched || activeCategory !== "전체") && (
+      <>
 
       {/* Results header */}
       <div className="bk-results-header">
+        {searched && (
+          <button className="bk-back-btn" onClick={() => setActiveCategory("전체")}>
+            ← 카테고리
+          </button>
+        )}
         <span className="bk-results-count">
           <strong>{ticket.region}</strong> 근처에서 <strong>{filtered.length}개</strong>의 체험을 찾았습니다
         </span>
@@ -241,6 +290,9 @@ export default function BookingPage({ onNavigate, ticket, allTickets }: Props) {
           </button>
         </aside>
       </div>
+
+      </> /* end (!searched || activeCategory !== "전체") */
+      )}
     </div>
   );
 }
