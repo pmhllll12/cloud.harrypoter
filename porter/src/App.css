@@ -128,9 +128,9 @@
   transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 인트로 중: 사진 줌인 */
+/* 인트로 중: 사진 살짝 줌인 */
 .landing--intro .palace-img {
-  transform: scale(1.45);
+  transform: scale(1.08);
 }
 
 /* 인트로 중: 글자/navbar 숨기기 */
@@ -151,6 +151,51 @@
 
 .navbar {
   transition: opacity 0.7s ease 0.2s;
+}
+
+/* ── 까치 애니메이션 ──────────────────────────────────────────── */
+.magpie-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.magpie-bird {
+  position: absolute;
+  width: 160px;
+  top: 28%;
+  animation: magpie-fly 2.6s cubic-bezier(0.3, 0, 0.6, 1) forwards;
+}
+
+.magpie-wing-group {
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  animation: wing-flap 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes magpie-fly {
+  0% {
+    transform: translateX(-200px) translateY(30px);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(44vw) translateY(0px);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px)) translateY(-30px);
+    opacity: 0;
+  }
+}
+
+@keyframes wing-flap {
+  from { transform: rotate(-20deg); }
+  to   { transform: rotate(14deg); }
 }
 
 /* 그라디언트 오버레이: 15%p 씩 줄임 */

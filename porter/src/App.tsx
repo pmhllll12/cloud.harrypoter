@@ -17,7 +17,7 @@ type HistoryState = {
 
 export default function App() {
   const [page, setPage] = useState<Page>("landing");
-  const [introPlaying, setIntroPlaying] = useState(true);
+  const [textVisible, setTextVisible] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
 
@@ -26,9 +26,9 @@ export default function App() {
     window.history.replaceState({ page: "landing" } as HistoryState, "");
   }, []);
 
-  // zoom intro
+  // 까치가 지나간 후 텍스트 등장
   useEffect(() => {
-    const t = setTimeout(() => setIntroPlaying(false), 100);
+    const t = setTimeout(() => setTextVisible(true), 1800);
     return () => clearTimeout(t);
   }, []);
 
@@ -76,7 +76,7 @@ export default function App() {
     return <BookingPage onNavigate={navigate} ticket={selectedTicket} allTickets={ALL_TICKETS} />;
 
   return (
-    <section className={`landing ${introPlaying ? "landing--intro" : ""}`}>
+    <section className={`landing ${!textVisible ? "landing--intro" : ""}`}>
       <nav className="navbar">
         <div className="nav-left">
           <div className="nav-brand">
@@ -98,6 +98,32 @@ export default function App() {
       <div className="landing-visual" aria-hidden="true">
         <img className="palace-img" src="/palace.jpg" alt="" />
         <div className="palace-mask" />
+      </div>
+
+      {/* 까치 인트로 애니메이션 */}
+      <div className="magpie-overlay" aria-hidden="true">
+        <svg className="magpie-bird" viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg">
+          {/* 꼬리 */}
+          <path d="M22 54 Q4 70 8 90 L26 58 Z" fill="#0d0d0d"/>
+          <path d="M17 50 Q-2 64 3 84 L21 54 Z" fill="#1a1a1a"/>
+          {/* 몸통 */}
+          <ellipse cx="56" cy="54" rx="33" ry="17" fill="#111"/>
+          {/* 흰 배 */}
+          <ellipse cx="50" cy="59" rx="21" ry="12" fill="#f0f0f0"/>
+          {/* 날개 + 흰 패치 (함께 퍼덕) */}
+          <g className="magpie-wing-group">
+            <path d="M38 46 Q60 16 94 34 Q70 44 44 53 Z" fill="#111"/>
+            <path d="M43 48 Q63 21 89 36 Q67 44 48 52 Z" fill="#ddd"/>
+          </g>
+          {/* 머리 */}
+          <ellipse cx="97" cy="40" rx="18" ry="16" fill="#111"/>
+          {/* 부리 */}
+          <path d="M114 39 L134 36 L114 44 Z" fill="#555"/>
+          {/* 눈 */}
+          <circle cx="102" cy="35" r="4.5" fill="#fff"/>
+          <circle cx="103" cy="35" r="2.8" fill="#111"/>
+          <circle cx="101" cy="34" r="1" fill="#fff"/>
+        </svg>
       </div>
 
       <div className="landing-text">
