@@ -36,7 +36,7 @@ export default function ChatModal({ open, onClose }: Props) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next.slice(next.findIndex((m) => m.role === "user")) }),
       });
       const data = await res.json();
       setMessages([
