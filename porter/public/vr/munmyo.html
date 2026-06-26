@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>문묘 및 성균관 VR 시연 공간</title>
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <style>
+        .a-cursor { display: none !important; }
+        canvas { cursor: none; }
+
+        #hud {
+            position: fixed; bottom: 10px; left: 10px;
+            color: #fff; font-size: 13px;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 10px; border-radius: 6px;
+            font-family: sans-serif;
+            pointer-events: none;
+        }
+    </style>
+
+    <script>
+        const buildingBoxes = [];
+        const debugHelpers = [];
+
+        let isFlying = false;
+
+        let debugVisible = false;
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyC') {
+                debugVisible = !debugVisible;
+                const scene3D = document.querySelector('a-scene').object3D;
+                if (debugVisible) {
+                    for (const b of buildingBoxes) {
+                        const box3 = new THREE.Box3(
+                            new THREE.Vector3(b.minX, b.minY, b.minZ),
+                            new THREE.Vector3(b.maxX, b.topY,  b.maxZ)
+                        );
+                        const helper = new THREE.Box3Helper(box3, new THREE.Color(0x00ff00));
+                        scene3D.add(helper);
+                        debugHelpers.push(helper);
+                    }
+                } else {
+                    debugHelpers.forEach(h => scene3D.remove(h));
+                    debugHelpers.length = 0;
+                }
+            }
+        });
+
+        AFRAME.registerComponent('building-solid', {
+            schema: {
+                portal: { type: 'boolean', default: false }
+            },
+            init: function () {
+                this.el.addEventListener('model-loaded', () => {
+                    const mesh = this.el.getObject3D('mesh');
+                    if (!mesh) return;
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    buildingBoxes.push({
+                        minX: box.min.x - 0.3, maxX: box.max.x + 0.3,
+                        minZ: box.min.z - 0.3, maxZ: box.max.z + 0.3,
+                        minY: box.min.y,        topY: box.max.y,
+                        isPortal: this.data.portal
+                    });
+                });
+            }
+        });
+
+        AFRAME.registerComponent('double-click-fly', {
+            init: function () {
+                this._onDblClick = () => {
+                    isFlying = !isFlying;
+                    const hud = document.getElementById('hud');
+
+                    if (isFlying) {
+                        this.el.setAttribute('wasd-controls', 'acceleration: 90; fly: true');
+                        this.el.object3D.position.y += 1.5;
+                        hud.textContent = "WASD 이동 · 시선 방향 비행 | 🚀 비행 모드 ON (더블클릭 시 착지)";
+                    } else {
+                        this.el.setAttribute('wasd-controls', 'acceleration: 80; fly: false');
+                        hud.textContent = "WASD 이동 · Space 점프 | 🚶 지상 모드 (더블클릭 시 비행)";
+                    }
+                };
+                window.addEventListener('dblclick', this._onDblClick);
+            },
+            remove: function () {
+                window.removeEventListener('dblclick', this._onDblClick);
+            }
+        });
+
+        AFRAME.registerComponent('player-collider', {
+            init: function () {
+                this.defaultGroundY = 1.6;
+                this.vy             = 0;
+                this.grounded       = true;
+
+                this._jump = (e) => {
+                    if (e.code === 'Space' && this.grounded && !isFlying) {
+                        this.vy = 8;
+                        this.grounded = false;
+                    }
+                };
+                window.addEventListener('keydown', this._jump);
+            },
+            remove: function () {
+                window.removeEventListener('keydown', this._jump);
+            },
+            tick: function (t, delta) {
+                const pos = this.el.object3D.position;
+
+                if (!isFlying) {
+                    const dt = Math.min(delta, 100) / 1000;
+
+                    let currentGroundY = this.defaultGroundY;
+                    for (const b of buildingBoxes) {
+                        if (pos.x >= b.minX && pos.x <= b.maxX && pos.z >= b.minZ && pos.z <= b.maxZ) {
+                            const surfaceY = b.topY + 1.6;
+                            if (surfaceY > currentGroundY && pos.y >= surfaceY - 2.5) {
+                                currentGroundY = surfaceY;
+                            }
+                        }
+                    }
+
+                    if (!this.grounded || pos.y > currentGroundY) {
+                        this.vy -= 22 * dt;
+                        pos.y  += this.vy * dt;
+                    }
+
+                    if (pos.y <= currentGroundY) {
+                        pos.y         = currentGroundY;
+                        this.vy       = 0;
+                        this.grounded = true;
+                    }
+
+                    const R = 0.4;
+                    for (const b of buildingBoxes) {
+                        if ((pos.y - 1.6) >= b.topY) continue;
+                        const overlapX = pos.x + R > b.minX && pos.x - R < b.maxX;
+                        const overlapZ = pos.z + R > b.minZ && pos.z - R < b.maxZ;
+
+                        if (!overlapX || !overlapZ) continue;
+
+                        const toLeft  = pos.x - (b.minX - R);
+                        const toRight = (b.maxX + R) - pos.x;
+                        const toMinZ  = pos.z - (b.minZ - R);
+                        const toMaxZ  = (b.maxZ + R) - pos.z;
+                        const minDist = Math.min(toLeft, toRight, toMinZ, toMaxZ);
+
+                        if (b.isPortal) {
+                            if      (minDist === toLeft)  pos.x = b.maxX + R;
+                            else if (minDist === toRight) pos.x = b.minX - R;
+                            else if (minDist === toMinZ)  pos.z = b.maxZ + R;
+                            else                          pos.z = b.minZ - R;
+                        } else {
+                            if      (minDist === toLeft)  pos.x = b.minX - R;
+                            else if (minDist === toRight) pos.x = b.maxX + R;
+                            else if (minDist === toMinZ)  pos.z = b.minZ - R;
+                            else                          pos.z = b.maxZ + R;
+                        }
+                    }
+                } else {
+                    if (pos.y < this.defaultGroundY) pos.y = this.defaultGroundY;
+                    this.grounded = false;
+                    this.vy       = 0;
+                }
+
+                const minX = -28.5, maxX = 28.5;
+                const minZ = -180.5, maxZ = 16.5;
+                if (pos.x < minX) pos.x = minX;
+                if (pos.x > maxX) pos.x = maxX;
+                if (pos.z < minZ) pos.z = minZ;
+                if (pos.z > maxZ) pos.z = maxZ;
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <a-scene
+        renderer="antialias: true;
+                  colorManagement: true;
+                  physicallyCorrectLights: false;
+                  maxCanvasWidth: 2560;
+                  maxCanvasHeight: 1440;
+                  pixelRatio: auto;
+                  logarithmicDepthBuffer: false;
+                  powerPreference: high-performance;
+                  sortObjects: false"
+        vr-mode-ui="enabled: false"
+        background="color: #87CEEB"
+        fog="type: none"
+        loading-screen="dotsColor: #fff; backgroundColor: #111">
+
+        <a-light type="ambient" color="#ffffff" intensity="0.9"></a-light>
+        <a-light type="directional" color="#fffaf0" intensity="0.5" position="-1 4 2"></a-light>
+
+        <a-assets timeout="60000">
+            <a-asset-item id="model-dj"  src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/dj-v1.glb"></a-asset-item>
+            <a-asset-item id="model-dm"  src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/dm-v1.glb"></a-asset-item>
+            <a-asset-item id="model-dsj" src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/dsj-v1.glb"></a-asset-item>
+            <a-asset-item id="model-mrd" src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/mrd-v1.glb"></a-asset-item>
+            <a-asset-item id="model-sj"  src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/sj-v1.glb"></a-asset-item>
+            <a-asset-item id="model-sm"  src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/sm-v1.glb"></a-asset-item>
+            <a-asset-item id="model-ssm" src="https://bzzxtvahrjukecjyebsc.supabase.co/storage/v1/object/public/3d_map_file/ssm-v1.glb"></a-asset-item>
+        </a-assets>
+
+        <a-entity building-solid="portal: true" gltf-model="#model-ssm" position="0 -1 0" scale="1 1 1"></a-entity>
+        <a-entity building-solid="portal: true" gltf-model="#model-dsj" position="1 0 -73" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-dm"  position="20 -1 -30"    rotation="0 -90 0"  scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-sm"  position="-20 -1 -29"   rotation="0 90 0"   scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-mrd" position="-1 0 -143"                        scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-dj"  position="20 -0.45 -105" rotation="0 90 0.85" scale="1 1 1"></a-entity>
+        <a-entity building-solid gltf-model="#model-sj"  position="-20 -0.45 -105" rotation="0 90 -0.6" scale="1 1 1"></a-entity>
+
+        <a-plane position="0 0 -82" rotation="-90 0 0" width="60" height="200" color="#B37D4E"></a-plane>
+
+        <a-entity position="0 0 18">
+            <a-box position="0 0.4 0" width="60" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="60" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="60" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="61" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <a-entity position="0 0 -182">
+            <a-box position="0 0.4 0" width="60" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="60" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="60" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="61" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <a-entity position="-30 0 -82" rotation="0 90 0">
+            <a-box position="0 0.4 0" width="200" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="200" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="200" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="201" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <a-entity position="30 0 -82" rotation="0 90 0">
+            <a-box position="0 0.4 0" width="200" height="0.8" depth="0.9" color="#7A746D"></a-box>
+            <a-box position="0 1.8 0" width="200" height="2.0" depth="0.75" color="#C39B78"></a-box>
+            <a-box position="0 2.85 0" width="200" height="0.1" depth="0.8" color="#F2EFE9"></a-box>
+            <a-box position="0 3.1 0" width="201" height="0.4" depth="1.4" color="#313335"></a-box>
+        </a-entity>
+
+        <a-camera position="0 1.6 5"
+                  look-controls="pointerLockEnabled: false"
+                  wasd-controls="acceleration: 80; fly: false"
+                  raycaster="enabled: false"
+                  player-collider
+                  double-click-fly
+                  camera="near: 0.1; far: 1000">
+        </a-camera>
+
+    </a-scene>
+
+    <div id="hud">WASD 이동 · Space 점프 · C 충돌박스 | 🚶 지상 모드 (더블클릭 시 비행)</div>
+
+</body>
+</html>
