@@ -1,5 +1,7 @@
+import { useState } from "react";
 import "./TicketPage.css";
 import type { Ticket } from "./BookingPage";
+import ChatModal from "./ChatModal";
 
 type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking";
 type Props = { onNavigate: (page: Page) => void; onBook: (ticket: Ticket) => void };
@@ -76,6 +78,7 @@ const TICKETS = [
 const CATEGORIES = ["전체", "액티비티", "자연탐방", "문화유산", "음식체험"];
 
 export default function TicketPage({ onNavigate, onBook }: Props) {
+  const [chatOpen, setChatOpen] = useState(false);
   return (
     <div className="ticket-page">
       <nav className="tk-nav">
@@ -159,8 +162,10 @@ export default function TicketPage({ onNavigate, onBook }: Props) {
       <section className="tk-cta">
         <h2>AI에게 맞춤 코스를 추천받으세요</h2>
         <p>여행 날짜, 인원, 관심사를 알려주시면 AI가 최적의 전국 여행 코스를 만들어드립니다.</p>
-        <button className="tk-cta-btn">AI와 대화하기</button>
+        <button className="tk-cta-btn" onClick={() => setChatOpen(true)}>AI와 대화하기</button>
       </section>
+
+      <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 }

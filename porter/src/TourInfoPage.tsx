@@ -1,5 +1,7 @@
+import { useState } from "react";
 import "./TourInfoPage.css";
 import type { Spot } from "./SpotDetailPage";
+import ChatModal from "./ChatModal";
 
 type Page = "landing" | "map" | "store" | "tourinfo" | "ticket" | "booking" | "spotdetail";
 type Props = { onNavigate: (page: Page) => void; onViewSpot: (spot: Spot) => void };
@@ -52,6 +54,7 @@ const SPOTS = [
 const CATEGORIES = ["전체", "자연", "역사문화", "힐링"];
 
 export default function TourInfoPage({ onNavigate, onViewSpot }: Props) {
+  const [chatOpen, setChatOpen] = useState(false);
   return (
     <div className="tourinfo-page">
       <nav className="ti-nav">
@@ -126,9 +129,11 @@ export default function TourInfoPage({ onNavigate, onViewSpot }: Props) {
         <div className="ti-ai-content">
           <h2>AI와 함께하는 스마트 관광</h2>
           <p>원하는 명소에 대해 궁금한 점을 AI에게 물어보세요.<br />역사, 교통, 맛집까지 실시간으로 안내해드립니다.</p>
-          <button className="ti-ai-btn">AI와 대화하기</button>
+          <button className="ti-ai-btn" onClick={() => setChatOpen(true)}>AI와 대화하기</button>
         </div>
       </section>
+
+      <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 }
