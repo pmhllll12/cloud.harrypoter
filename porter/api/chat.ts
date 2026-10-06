@@ -8,6 +8,10 @@ const SYSTEM_PROMPT = `당신은 대한민국 전국의 문화유산, 관광지,
 
 항상 한국어로 답변하세요. 정보는 구체적이고 실용적으로 제공하며, 운영시간·입장료·교통편 같은 실용 정보도 함께 안내해 주세요.`;
 
+// Groq가 2026-08-16에 llama-3.3-70b-versatile을 엔터프라이즈 전용으로 바꿔 일반 키로는 404 → 권장 대체 모델
+// GROQ_MODEL 환경변수로 바꿀 수 있다
+const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -37,12 +41,15 @@ export default async function handler(req: any, res: any) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: MODEL,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...messages.map((m) => ({ role: m.role, content: m.content })),
         ],
-        max_tokens: 1024,
+        // gpt-oss는 추론 모델: 추론은 짧게, 응답에서는 빼고(최종 답만 content로), 추론 토큰을 감안해 출력 한도를 넉넉히
+        reasoning_effort: "low",
+        include_reasoning: false,
+        max_completion_tokens: 2048,
         temperature: 0.7,
       }),
     });
@@ -50,7 +57,8 @@ export default async function handler(req: any, res: any) {
     if (!response.ok) {
       const errText = await response.text();
       console.error("Groq error:", response.status, errText);
-      res.status(500).json({ error: `Groq ${response.status}: ${errText} (key prefix: ${apiKey.slice(0,6)}, len: ${apiKey.length})` });
+      // 자세한 오류는 서버 로그에만 (방문자 화면에 제공자 응답이나 키 정보를 보이지 않는다)
+      res.status(502).json({ error: "AI 응답을 받지 못했습니다. 잠시 뒤 다시 시도해 주세요." });
       return;
     }
 
