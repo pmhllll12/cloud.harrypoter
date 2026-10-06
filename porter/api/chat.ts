@@ -1,3 +1,6 @@
+// Vercel 함수는 Node ESM이라 상대 경로 import에 .js 확장자가 필요 (빌드 시 .ts가 .js로 바뀜)
+import { DETAIL_DATA } from "../src/spotDetailData.js";
+
 const SYSTEM_PROMPT = `당신은 대한민국 전국의 문화유산, 관광지, 맛집, 교통을 안내하는 AI 가이드입니다.
 
 다음 분야에서 상세하고 친절하게 안내해 드립니다:
@@ -11,7 +14,33 @@ const SYSTEM_PROMPT = `당신은 대한민국 전국의 문화유산, 관광지,
 답변 형식:
 - 채팅 화면은 마크다운을 표시하지 못합니다. **, #, 표(|), 코드 블록 없이 평문으로 쓰고, 목록은 "1." 또는 "-"로 시작하는 줄로만 나눠 주세요.
 - 15줄 이내로 핵심만 간결하게 답하세요.
-- 장소의 위치, 노선, 요금처럼 확실하지 않은 정보는 지어내지 말고 "방문 전 공식 안내를 확인해 주세요"라고 안내하세요.`;
+- 장소의 위치, 노선, 요금처럼 확실하지 않은 정보는 지어내지 말고 "방문 전 공식 안내를 확인해 주세요"라고 안내하세요.
+
+근거 자료:
+- 시스템 메시지 끝의 [사이트 자료]는 검수된 정보입니다. 관련 내용이 있으면 이 자료를 우선 사용하고, 일반 지식과 다르면 자료를 따르세요.
+- 자료에 없는 연도, 인물, 문화재 지정 번호 같은 세부 사실은 확실할 때만 말하고, 확실하지 않으면 생략하세요.`;
+
+// 이름에서 검색어 뽑기: 전체 이름 + 일반 명사가 아닌 2글자 이상 단어 (예: "성균관 문묘" → 성균관, 문묘)
+const GENERIC = new Set(["국립공원", "해수욕장", "해변"]);
+const SPOT_KEYWORDS = Object.keys(DETAIL_DATA).map((name) => ({
+  name,
+  keywords: [name, ...name.split(" ").filter((w) => w.length >= 2 && !GENERIC.has(w))],
+}));
+
+// 최근 사용자 질문에 나온 명소의 검수된 자료(소개·주소·운영시간·FAQ)만 골라 근거로 넣는다
+// 전부 넣으면 Groq 무료 등급 분당 토큰 한도를 넘으므로 질문과 관련된 것만 (리뷰는 예시 데이터라 제외)
+function siteContext(messages: Array<{ role: string; content: string }>): string {
+  const recent = messages.filter((m) => m.role === "user").slice(-3).map((m) => m.content).join("\n");
+  const hits = SPOT_KEYWORDS.filter((s) => s.keywords.some((k) => recent.includes(k))).slice(0, 2);
+  if (hits.length === 0) {
+    return `[사이트 자료] 이 사이트가 상세 정보를 보유한 명소: ${Object.keys(DETAIL_DATA).join(", ")}`;
+  }
+  return hits.map(({ name }) => {
+    const d = DETAIL_DATA[name];
+    const faq = d.faq.map((f) => `Q. ${f.q}\nA. ${f.a}`).join("\n");
+    return `[사이트 자료: ${name}]\n소개: ${d.overview}\n주소: ${d.address}\n운영시간: ${d.hours}\n${faq}`;
+  }).join("\n\n");
+}
 
 // Groq가 2026-08-16에 llama-3.3-70b-versatile을 엔터프라이즈 전용으로 바꿔 일반 키로는 404 → 권장 대체 모델
 // GROQ_MODEL 환경변수로 바꿀 수 있다
@@ -48,7 +77,7 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: `${SYSTEM_PROMPT}\n\n${siteContext(messages)}` },
           ...messages.map((m) => ({ role: m.role, content: m.content })),
         ],
         // gpt-oss는 추론 모델: 추론은 중간, 응답에서는 빼고(최종 답만 content로), 추론 토큰을 감안해 출력 한도를 넉넉히
