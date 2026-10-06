@@ -6,7 +6,12 @@ const SYSTEM_PROMPT = `당신은 대한민국 전국의 문화유산, 관광지,
 - 맛집: 지역 향토 음식, 유명 맛집, 음식 문화 소개
 - 교통: KTX, 지하철, 고속버스, 렌터카, 항공편 등 이동 수단
 
-항상 한국어로 답변하세요. 정보는 구체적이고 실용적으로 제공하며, 운영시간·입장료·교통편 같은 실용 정보도 함께 안내해 주세요.`;
+항상 한국어로 답변하세요. 정보는 구체적이고 실용적으로 제공하며, 운영시간·입장료·교통편 같은 실용 정보도 함께 안내해 주세요.
+
+답변 형식:
+- 채팅 화면은 마크다운을 표시하지 못합니다. **, #, 표(|), 코드 블록 없이 평문으로 쓰고, 목록은 "1." 또는 "-"로 시작하는 줄로만 나눠 주세요.
+- 15줄 이내로 핵심만 간결하게 답하세요.
+- 장소의 위치, 노선, 요금처럼 확실하지 않은 정보는 지어내지 말고 "방문 전 공식 안내를 확인해 주세요"라고 안내하세요.`;
 
 // Groq가 2026-08-16에 llama-3.3-70b-versatile을 엔터프라이즈 전용으로 바꿔 일반 키로는 404 → 권장 대체 모델
 // GROQ_MODEL 환경변수로 바꿀 수 있다
@@ -46,8 +51,8 @@ export default async function handler(req: any, res: any) {
           { role: "system", content: SYSTEM_PROMPT },
           ...messages.map((m) => ({ role: m.role, content: m.content })),
         ],
-        // gpt-oss는 추론 모델: 추론은 짧게, 응답에서는 빼고(최종 답만 content로), 추론 토큰을 감안해 출력 한도를 넉넉히
-        reasoning_effort: "low",
+        // gpt-oss는 추론 모델: 추론은 중간, 응답에서는 빼고(최종 답만 content로), 추론 토큰을 감안해 출력 한도를 넉넉히
+        reasoning_effort: "medium",
         include_reasoning: false,
         max_completion_tokens: 2048,
         temperature: 0.7,
